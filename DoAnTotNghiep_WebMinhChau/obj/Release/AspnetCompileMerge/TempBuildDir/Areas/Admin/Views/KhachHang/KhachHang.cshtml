@@ -1,0 +1,103 @@
+﻿
+@model IEnumerable<DoAnTotNghiep_WebMinhChau.Areas.Admin.Models.KhachHang>
+
+@{
+    ViewBag.Title = "KhachHang";
+    Layout = "~/Areas/Admin/Views/Shared/LayoutADMIN.cshtml";
+}
+
+<style>
+    .search-container {
+        display: flex;
+        align-items: center;
+        max-width: 800px;
+        margin: 20px auto;
+    }
+
+        .search-container input {
+            flex: 1;
+            padding: 8px 12px;
+            border-radius: 20px 0 0 20px;
+            border: 1px solid #ccc;
+            border-right: none;
+        }
+
+        .search-container button {
+            padding: 8px 16px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 0 20px 20px 0;
+            cursor: pointer;
+        }
+
+    .actions {
+        display: flex;
+        align-items: center;
+        margin-left: 20px;
+    }
+
+        .actions .create-new {
+            background-color: #28a745;
+            color: #fff;
+            border: none;
+            border-radius: 20px;
+            padding: 6px 12px;
+            margin-right: 10px;
+            cursor: pointer;
+        }
+
+        .actions .count {
+            background-color: #f8f9fa;
+            border: 1px solid #ced4da;
+            border-radius: 20px;
+            padding: 6px 12px;
+        }
+</style>
+
+<!-- Form tìm kiếm -->
+<form class="search-container" method="get" action="@Url.Action("KhachHang", "KhachHang")">
+    <input type="text" name="searchTerm" value="@Request.QueryString["searchTerm"]" placeholder="Tìm kiếm theo số điện thoại" />
+    <button type="submit">Tìm</button>
+    <div class="actions">
+        <div class="count">Số lượng khách hàng: @ViewBag.SLKH</div>
+    </div>
+</form>
+
+<!-- Bảng hiển thị kết quả -->
+<table class="table">
+    <thead>
+        <tr>
+            <th>Họ tên </th>
+            <th>Email</th>
+            <th>Địa chỉ</th>
+            <th>Năm sinh</th>
+            <th>Giới tính</th>
+            <th>SĐT</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model.Any())
+        {
+            foreach (var item in Model)
+            {
+        <tr>
+            <td>@Html.DisplayFor(modelItem => item.HoTen)</td>
+            <td>@Html.DisplayFor(modelItem => item.EmailKH)</td>
+            <td>@Html.DisplayFor(modelItem => item.DiaChi)</td>
+            <td>@Html.DisplayFor(modelItem => item.NamSinh)</td>
+            <td>@Html.DisplayFor(modelItem => item.GioiTinh)</td>
+            <td>@Html.DisplayFor(modelItem => item.SDT)</td>
+
+        </tr>
+            }
+        }
+        else
+        {
+            <tr>
+                <td colspan="6">Không tìm thấy khách hàng nào</td>
+            </tr>
+        }
+    </tbody>
+</table>
+

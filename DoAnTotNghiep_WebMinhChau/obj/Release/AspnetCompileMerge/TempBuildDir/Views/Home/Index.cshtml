@@ -1,0 +1,446 @@
+﻿@using DoAnTotNghiep_WebMinhChau.Models
+@model IPagedList<SanPham>
+@using PagedList.Mvc;
+@using PagedList;
+
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_LayoutGeneral.cshtml";
+}
+<link href="~/Assets/Css/Css_SanPham.css" rel="stylesheet" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+
+<style>
+    .category-container {
+        border: 1px solid #ccc;
+        padding: 15px;
+    }
+
+    .category-link {
+        text-decoration: none;
+        color: inherit;
+    }
+
+    .category-link, .ctdm-link {
+        text-decoration: none;
+        color: #333;
+    }
+
+        .category-link:hover, .ctdm-link:hover {
+            color: #ff6b6b;
+            text-decoration: underline;
+        }
+
+    ul.ctdm-list, ul.list-unstyled {
+        list-style-type: none;
+        padding-left: 0;
+    }
+
+        ul.ctdm-list li, ul.list-unstyled li {
+            margin: 5px 0;
+        }
+
+    .carousel-inner img {
+        width: 100%;
+        height: 400px;
+        background-size: cover;
+        background-position: center;
+    }
+    /*nút tìm kiếm */
+    .navbar-nav {
+        display: flex;
+        justify-content: center;
+        width: 100%;
+    }
+
+    .custom-search-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
+    }
+
+    .input-group {
+        display: flex;
+        width: 100%;
+    }
+
+    .custom-search-bar {
+        border-radius: 5px 0 0 5px;
+        border: 1px solid #ccc;
+        padding: 12px;
+        width: 500px;
+        transition: border-color 0.3s;
+    }
+
+        .custom-search-bar:focus {
+            border-color: #007bff;
+            outline: none;
+        }
+
+    .custom-search-button {
+        color: white;
+        border: none;
+        border-radius: 0 5px 5px 0;
+        padding: 12px 20px;
+        cursor: pointer;
+        transition: background-color 0.3s, transform 0.2s;
+    }
+
+        .custom-search-button:hover {
+            background-color: #0056b3;
+            transform: scale(1.05);
+        }
+    /*Danh mục*/
+    .category-link {
+        display: block;
+        height: 50px;
+        line-height: 50px;
+        padding: 0 15px;
+        color: #333;
+        text-decoration: none;
+        transition: background-color 0.3s, color 0.3s;
+        width: 100%;
+        font-size: 18px;
+        cursor: pointer;
+    }
+
+        .category-link:hover,
+        .category-link.active {
+            background-color: #bbe8ff;
+            color: #007bff;
+            font-weight: bold;
+            text-decoration: none;
+        }
+
+    .ctdm-list {
+        padding-left: 15px;
+        display: none;
+        margin-top: 5px;
+    }
+
+        .ctdm-list.active {
+            display: block;
+        }
+
+        .ctdm-list li {
+            margin: 0;
+        }
+
+    .ctdm-link {
+        display: block;
+        font-size: 17px;
+        padding: 10px;
+        color: #333;
+        text-decoration: none;
+        transition: background-color 0.3s, color 0.3s;
+    }
+
+        .ctdm-link:hover {
+            background-color: #cfefff;
+            color: red;
+            font-weight: bold;
+            text-decoration: none;
+        }
+
+    /*Phân trang */
+    .pagination {
+        display: flex;
+        justify-content: flex-start;
+        margin-top: 20px;
+        padding-left: 55px;
+    }
+
+        .pagination a {
+            color: #007bff;
+            padding: 10px 15px;
+            margin: 0 5px;
+            text-decoration: none;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+            .pagination a:hover {
+                background-color: #007bff;
+                color: white;
+            }
+
+        .pagination .active a {
+            color: red !important;
+            background-color: transparent;
+            border-color: red;
+        }
+
+
+        .pagination a.disabled {
+            color: #007bff;
+            pointer-events: none;
+            border-color: #ccc;
+        }
+
+    .dropdown-item:hover {
+        background-color: #e2e6ea; /* Màu nền khi hover */
+        color: #007bff; /* Màu chữ khi hover */
+    }
+</style>
+
+
+<div id="carouselExampleIndicators" class="carousel slide" data-bs-ride="carousel">
+    <div class="carousel-indicators">
+        <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+        <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="1" aria-label="Slide 2"></button>
+        <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="2" aria-label="Slide 3"></button>
+    </div>
+    <div class="carousel-inner">
+        <div class="carousel-item active">
+            <img src="~/Assets/Image/Slide1.png" class="d-block w-100" alt="Slide1">
+        </div>
+        <div class="carousel-item">
+            <img src="~/Assets/Image/Slide2.png" class="d-block w-100" alt="Slide2">
+        </div>
+        <div class="carousel-item">
+            <img src="~/Assets/Image/Slide3.png" class="d-block w-100" alt="Slide3">
+        </div>
+    </div>
+    <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Previous</span>
+    </button>
+    <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="next">
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Next</span>
+    </button>
+</div>
+
+<hr />
+<!-- Nút Tìm kiếm -->
+<div class="navbar-nav ms-auto w-100">
+    <div class="d-flex justify-content-between align-items-center w-100" style="padding-left: 163px;">
+        <div class="d-flex justify-content-center flex-grow-1">
+            <div class="custom-search">
+                <div class="custom-search-container">
+                    <form method="get" action="/Home/Index">
+                        <div class="input-group">
+                            <input type="text" class="form-control custom-search-bar" name="ten" placeholder="Bạn muốn tìm gì?" aria-label="Search" style="width: 550px;">
+                            <button class="btn btn-success custom-search-button" type="submit">
+                                <i class="bi bi-search"></i>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+    </div>
+</div>
+
+
+
+
+@* Hiển thị Danh mục *@
+<div class="row" style="width:1643px">
+    <div class="col-md-2">
+        <div class="category-container" style="width:260px; padding:5px">
+            <h4 style="color: #ff6b6b; font-size: 28px; text-align:center">Danh Mục</h4>
+            <ul class="list-unstyled">
+                @{ var danhmuc = ViewBag.DanhSachDanhMucSP as List<DanhMucSP>;
+                    var ctdmList = ViewBag.DanhSachCTDM as List<CTDanhMuc>;
+
+                    if (danhmuc != null && ctdmList != null)
+                    {
+                        foreach (var dm in danhmuc)
+                        {
+                            <li>
+                                <span class="category-link" data-ma-danh-muc="@dm.MaDanhMuc" onclick="toggleCTDM('@dm.MaDanhMuc')">
+                                    <i class="fas fa-prescription-bottle"></i>
+                                    <span class="category-name" style="font-size: 18px">@dm.TenDanhMuc</span>
+                                </span>
+
+                                <!-- Chi tiết danh mục -->
+                                <ul class="ctdm-list" id="ctdm-list-@dm.MaDanhMuc" style="display: none;">
+                                    @{
+
+                                        var ctdm = ctdmList.Where(c => c.MaDanhMuc == dm.MaDanhMuc).ToList();
+
+                                        if (ctdm.Any())
+                                        {
+                                            foreach (var ct in ctdm)
+                                            {
+                                                <li style="padding-left: 31px;">
+                                                    <a href="@Url.Action("HienThiSanPhamTheoCTDM", new { maCTDM = ct.MaCTDM, maDanhMuc = dm.MaDanhMuc })" class="ctdm-link">
+                                                        <i class="fas fa-tag"></i> @ct.TenCTDM
+                                                    </a>
+                                                </li>
+
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <li>Không có chi tiết danh mục</li>
+                                        }
+                                    }
+                                </ul>
+                            </li>
+                        }
+                    }
+                    else
+                    {
+                        <h5 style="font-size: 20px">Danh mục không có dữ liệu</h5>
+                    } }
+            </ul>
+        </div>
+    </div>
+
+    <div class="col-md-10 col-12">
+        @* Hiển thị Sản Phẩm *@
+        <div class="tab-class text-center">
+            <div class="tab-content">
+                <div id="tab-6" class="tab-pane fade show p-0 active">
+                    <div class="row g-4">
+                        @foreach (var s in Model)
+                        {
+                            <div class="col-product">
+                                <a href="/Products/ChiTietSanPham/@s.MaSP">
+                                    <div class="el-wrapper">
+                                        <div class="box-up">
+                                            <img class="imgSP" src="~/Assets/Image/@s.HinhAnh" alt="">
+                                            <div class="img-info">
+                                                <div class="info-inner">
+                                                    <span class="p-name" title="@s.TenSP">@s.TenSP</span>
+                                                </div>
+                                            </div>
+                                            @if (s.GiaKM != null)
+                                            {
+                                                <div class="discount-tag">Khuyến mãi</div>}
+                                        </div>
+                                        <div class="box-down">
+                                            <div class="h-bg">
+                                                <div class="h-bg-inner"></div>
+                                            </div>
+                                            @{ var giaBanFormatted = s.GiaBan?.ToString("N0"); }
+                                            <a class="cart" href="#">
+                                                <span class="price @(s.GiaKM != null ? "with-discount" : "")">@giaBanFormatted vnđ</span>
+                                                @if (s.GiaKM != null)
+                                                {
+                                                    <span class="pricekm">
+                                                        @(s.GiaKM.HasValue ? s.GiaKM.Value.ToString("N0") : "Chưa có giá khuyến mãi") vnđ
+                                                    </span>}
+                                                <span class="add-to-cart" data-id="@s.MaSP" data-quantity="1" onclick="addToCart(this)">
+                                                    <i class="fas fa-shopping-cart icon-white"></i>
+                                                    <span class="txt">Thêm vào giỏ hàng</span>
+                                                </span>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>}
+                    </div>
+
+                    @* Điều khiển phân trang *@
+                    <div class="pagination">
+                        @Html.PagedListPager(Model, page => Url.Action("Index", new { page, ten = Request.QueryString["ten"] }),
+                            new PagedListRenderOptions
+                            {
+                                DisplayLinkToFirstPage = PagedListDisplayMode.Always,
+                                DisplayLinkToLastPage = PagedListDisplayMode.Always,
+                                DisplayLinkToPreviousPage = PagedListDisplayMode.Always,
+                                DisplayLinkToNextPage = PagedListDisplayMode.Always,
+                                LinkToPreviousPageFormat = "<",
+                                LinkToNextPageFormat = ">",
+                                LinkToFirstPageFormat = "Trang đầu",
+                                LinkToLastPageFormat = "Trang cuối"
+                            })
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://www.gstatic.com/dialogflow-console/fast/messenger/bootstrap.js?v=1"></script>
+<df-messenger intent="WELCOME"
+              chat-title="Test"
+              agent-id="757ecc46-13d5-4280-b4c4-278b4f0ae8fe"
+              language-code="en">
+
+</df-messenger>
+<script>
+    function toggleCTDM(maDanhMuc) {
+        var ctdmList = document.getElementById('ctdm-list-' + maDanhMuc);
+        if (ctdmList.style.display === 'none' || ctdmList.style.display === '') {
+            ctdmList.style.display = 'block';
+        } else {
+            ctdmList.style.display = 'none';
+        }
+    }
+</script>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $('#pagination').on('click', 'a', function (e) {
+            e.preventDefault(); // Ngăn chặn hành động mặc định
+
+            var url = $(this).attr('href'); // Lấy URL của trang phân trang mới
+            $.get(url, function (data) {
+                $('#content').html($(data).find('#content').html()); // Thay thế nội dung mới vào div có id="content"
+                $('#pagination').html($(data).find('#pagination').html()); // Cập nhật lại phần pagination
+            });
+        });
+    });
+</script>
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+<script type="text/javascript">
+    function addToCart(element) {
+    event.preventDefault();
+    var productId = $(element).data('id');
+    var quantity = $(element).data('quantity');
+
+    console.log(productId, quantity); // Kiểm tra giá trị
+
+    $.ajax({
+        url: '@Url.Action("AddItem", "Cart")', // Đảm bảo đường dẫn chính xác
+        type: 'POST',
+        data: {
+            productId: productId,
+            quantity: quantity
+        },
+        success: function (response) {
+            if (response.success) {
+                alert('Sản phẩm đã được thêm vào giỏ hàng!');
+            } else {
+                alert(response.message);
+            }
+        },
+        error: function (xhr, status, error) {
+            console.log(xhr.responseText); // In ra lỗi chi tiết
+            alert('Có lỗi xảy ra khi gửi yêu cầu.');
+        }
+    });
+}
+
+</script>
+
+@* Danh mục *@
+<script>
+    function toggleCTDM(maDanhMuc) {
+        // Ẩn tất cả danh mục con trước
+        document.querySelectorAll('.ctdm-list').forEach(list => {
+            list.style.display = 'none';
+            list.parentElement.querySelector('.category-link').classList.remove('active');
+        });
+
+        // Hiển thị danh mục con tương ứng
+        var ctdmList = document.getElementById('ctdm-list-' + maDanhMuc);
+        if (ctdmList) {
+            ctdmList.style.display = 'block';
+            ctdmList.parentElement.querySelector('.category-link').classList.add('active'); // Tô sáng danh mục cha
+        }
+    }
+
+</script>

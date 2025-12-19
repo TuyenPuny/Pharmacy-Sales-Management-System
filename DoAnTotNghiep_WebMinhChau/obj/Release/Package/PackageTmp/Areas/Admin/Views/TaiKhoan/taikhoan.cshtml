@@ -1,0 +1,108 @@
+﻿@model IEnumerable<DoAnTotNghiep_WebMinhChau.Areas.Admin.Models.TaiKhoan>
+
+@{
+    ViewBag.Title = "taikhoan";
+    Layout = "~/Areas/Admin/Views/Shared/LayoutADMIN.cshtml";
+
+    // Lọc danh sách tài khoản khách hàng và tài khoản nhân viên
+    var customerAccounts = Model.Where(t => !string.IsNullOrEmpty(t.EmailKH)).ToList();
+    var employeeAccounts = Model.Where(t => !string.IsNullOrEmpty(t.MaNV)).ToList();
+}
+
+<style>
+    .search-container {
+        display: flex;
+        align-items: center;
+        max-width: 800px;
+        margin: 20px auto;
+    }
+
+        .search-container input {
+            flex: 1;
+            padding: 8px 12px;
+            border-radius: 20px 0 0 20px;
+            border: 1px solid #ccc;
+            border-right: none;
+        }
+
+        .search-container button {
+            padding: 8px 16px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 0 20px 20px 0;
+            cursor: pointer;
+        }
+
+    .actions {
+        display: flex;
+        align-items: center;
+        margin-left: 20px;
+    }
+
+        .actions .create-new {
+            background-color: #28a745;
+            color: #fff;
+            border: none;
+            border-radius: 20px;
+            padding: 6px 12px;
+            margin-right: 10px;
+            cursor: pointer;
+        }
+
+        .actions .count {
+            background-color: #f8f9fa;
+            border: 1px solid #ced4da;
+            border-radius: 20px;
+            padding: 6px 12px;
+        }
+</style>
+
+<form class="search-container" method="get" action="@Url.Action("TaiKhoan", "taikhoan")">
+    <input type="text" name="searchTerm" value="@Request.QueryString["searchTerm"]" placeholder="Tìm kiếm theo tên tài khoản" />
+    <button type="submit">Tìm</button>
+     
+</form>
+
+<div class="container">
+
+    <!-- Cột Tài khoản nhân viên -->
+    <div class="col-md-12">
+        <h5 class="text-center">Tài khoản nhân viên</h5>
+        <table class="table">
+            <tr>
+                <th>Mã nhân viên</th>
+                <th>Mật khẩu</th>
+                <th>Hành động</th>
+            </tr>
+            @foreach (var item in employeeAccounts)
+            {
+                <tr>
+                    <td>@Html.DisplayFor(modelItem => item.MaNV)</td>
+                    <td>@Html.DisplayFor(modelItem => item.MatKhau)</td>
+                    <td>
+                        <a href="@Url.Action("Edit", "TaiKhoan", new { IDTK = item.IDTK })" class="btn-update btn btn-outline-info btn-sm me-2"><i class="fas fa-edit"></i></a>
+                        <a href="javascript:void(0);"
+                           class="btn-delete btn btn-outline-danger btn-sm me-2"
+                           onclick="confirmDelete(@item.IDTK)">
+                            <i class="fas fa-trash-alt"></i>
+                        </a>
+                        @using (Html.BeginForm("Delete", "TaiKhoan", new { IDTK = item.IDTK }, FormMethod.Post, new { id = "deleteForm" + item.IDTK }))
+                        {
+                    @Html.AntiForgeryToken()
+                                        <input type="hidden" name="IDTK" value="@item.IDTK" />}
+                    </td>
+                </tr>
+            }
+        </table>
+    </div>
+  
+</div>
+
+<script type="text/javascript">
+    function confirmDelete(IDTK) {
+        if (confirm("Are you sure you want to delete this TaiKhoan?")) {
+            document.getElementById("deleteForm" + IDTK).submit();
+        }
+    }
+</script>

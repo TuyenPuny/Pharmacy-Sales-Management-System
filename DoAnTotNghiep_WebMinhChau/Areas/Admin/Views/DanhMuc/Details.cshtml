@@ -1,0 +1,184 @@
+﻿@{
+    ViewBag.Title = "Details";
+    Layout = "~/Areas/Admin/Views/Shared/LayoutADMIN.cshtml";
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    var danhMuc = ViewBag.DanhMuc as DoAnTotNghiep_WebMinhChau.Areas.Admin.Models.DanhMucSP;
+    var danhMucCon = ViewBag.DanhMucCon as List<DoAnTotNghiep_WebMinhChau.Areas.Admin.Models.CTDanhMuc>;
+}
+<div class="container mt-4">
+    <h4>Chi tiết danh mục</h4>
+    <hr />
+
+    <div class="row mb-4">
+        <!-- Thông tin danh mục -->
+        <div class="col-md-6">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Thông tin danh mục</h5>
+                    <dl class="row">
+                        <dt class="col-sm-4">Mã danh mục:</dt>
+                        <dd class="col-sm-8">@Html.DisplayFor(model => danhMuc.MaDanhMuc)</dd>
+
+                        <dt class="col-sm-4">Tên danh mục:</dt>
+                        <dd class="col-sm-8">@Html.DisplayFor(model => danhMuc.TenDanhMuc)</dd>
+
+                        <dt class="col-sm-4">Trạng thái:</dt>
+                        <dd class="col-sm-8">
+                            @(danhMuc.TrangThai ? "Đang hoạt động" : "Ngưng hoạt động")
+                        </dd>
+                    </dl>
+                </div>
+            </div>
+            @if (TempData["SuccessMessage"] != null)
+            {
+                <div class="alert alert-success">
+                    @TempData["SuccessMessage"]
+                </div>}
+
+            @if (TempData["ErrorMessage"] != null)
+            {
+                <div class="alert alert-danger">
+                    @TempData["ErrorMessage"]
+                </div>}
+        </div>
+
+        <!-- Tạo danh mục con -->
+        <div class="col-md-6">
+            @if (Session["Role"] == "ADMIN")
+            {
+                <h5>Tạo danh mục con:</h5>
+                <form id="createSubCategoryForm" method="post" action="@Url.Action("CreateSubCategory", "DanhMuc")">
+                    <input type="hidden" name="maDanhMuc" value="@danhMuc.MaDanhMuc" />
+                    <div class="mb-3">
+                        <label for="maCTDM" class="form-label">Mã danh mục con:</label>
+                        <input type="text" class="form-control" id="maCTDM" name="maCTDM" required />
+                    </div>
+                    <div class="mb-3">
+                        <label for="tenCTDM" class="form-label">Tên danh mục con:</label>
+                        <input type="text" class="form-control" id="tenCTDM" name="tenCTDM" required />
+                    </div>
+                    <button type="submit" class="btn btn-primary">Thêm danh mục con</button>
+                </form>
+            }
+        </div>
+    </div>
+
+    <h5>Danh sách danh mục con:</h5>
+    <div class="row mb-2">
+        <div class="col-4"><strong>Mã Chi tiết danh mục</strong></div>
+        <div class="col-6"><strong>Tên Chi tiết danh mục</strong></div>
+        @if (Session["Role"] == "ADMIN")
+        {
+            <div class="col-2"><strong>Hành động</strong></div>
+        }
+    </div> 
+    <ul class="list-group">
+        @if (danhMucCon != null && danhMucCon.Count > 0)
+        {
+            foreach (var item in danhMucCon)
+            {
+                <li class="list-group-item d-flex justify-content-between align-items-center" style="margin-right:55px">
+                    <div class="d-flex align-items-center me-3">
+                        <span class="item-code me-2" style="font-weight: bold;margin-left:30px">
+                            @item.MaCTDM
+                        </span>
+                        <input type="text" class="form-control item-name"
+                               data-id="@item.MaCTDM"
+                               data-ma-danh-muc="@item.MaDanhMuc"
+                               value="@item.TenCTDM"
+                               readonly
+                               onclick="makeEditable(this)"
+                               style="flex: 1; margin-right: 10px; margin-left: 265px; border: none; outline: none; background: transparent;">
+                    </div>
+                    <div>
+                        @if (Session["Role"] == "ADMIN")
+                        {
+                            <button class="btn btn-warning btn-sm save-btn d-none"
+                                    onclick="saveItem(this)">
+                                Lưu
+                            </button>
+                            <button class="btn btn-danger btn-sm delete-btn"
+                                    onclick="deleteItem('@item.MaCTDM', '@item.MaDanhMuc')">
+                                Xóa
+                            </button>
+                        }
+                    </div>
+                </li>
+            }
+        }
+        else
+        {
+            <p class="text-muted">Không có danh mục con nào.</p>
+        }
+    </ul>
+
+
+</div>
+
+<style>
+    .card-title {
+        color: #333;
+    }
+</style>
+
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    function makeEditable(element) {
+        // Cho phép chỉnh sửa trường tên danh mục
+        element.removeAttribute("readonly");
+        element.focus();
+
+        // Hiển thị nút "Lưu"
+        const saveBtn = element.closest('li').querySelector('.save-btn');
+        saveBtn.classList.remove('d-none');
+    }
+
+    function saveItem(button) {
+        const itemNameInput = button.closest('li').querySelector('.item-name');
+        const newName = itemNameInput.value;
+        const maCTDM = itemNameInput.dataset.id; // Lấy mã con danh mục từ data-id
+        const maDanhMuc = itemNameInput.dataset.maDanhMuc; // Lấy mã danh mục cha từ data-maDanhMuc
+
+        // Gọi API để lưu tên danh mục mới
+        fetch(`/DanhMuc/Update?maCTDM=${maCTDM}&maDanhMuc=${maDanhMuc}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ newName }), // Chỉ truyền newName trong body
+        })
+            .then(response => response.json())
+            .then(data => {
+                // Xử lý phản hồi từ máy chủ
+                if (data.success) {
+                    alert('Cập nhật thành công!');
+                    itemNameInput.setAttribute("readonly", true); // Đặt lại chế độ chỉ đọc
+                    button.classList.add('d-none'); // Ẩn nút "Lưu"
+                } else {
+                    alert('Cập nhật thất bại!');
+                }
+            })
+            .catch(error => console.error('Lỗi:', error));
+    }
+
+    function deleteItem(maCTDM, maDanhMuc) {
+        if (confirm('Bạn có chắc chắn muốn xóa danh mục này không?')) {
+            fetch(`/DanhMuc/Delete?maCTDM=${maCTDM}&maDanhMuc=${maDanhMuc}`, {
+                method: 'DELETE',
+            })
+                .then(response => response.json())
+                .then(data => {
+                    // Xử lý phản hồi từ máy chủ
+                    if (data.success) {
+                        alert('Xóa thành công!');
+                        location.reload(); // Tải lại trang để cập nhật danh sách
+                    } else {
+                        alert('Danh mục hiện tại có chứa sản phẩm đã được mua trong hóa đơn không thể xóa!!!');
+                    }
+                })
+                .catch(error => console.error('Lỗi:', error));
+        }
+    }
+
+</script>

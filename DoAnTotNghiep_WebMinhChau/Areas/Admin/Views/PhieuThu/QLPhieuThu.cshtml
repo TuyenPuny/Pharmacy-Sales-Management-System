@@ -1,0 +1,152 @@
+﻿@model IEnumerable<DoAnTotNghiep_WebMinhChau.Areas.Admin.Models.PhieuThu>
+@{
+    ViewBag.Title = "QLPhieuThu";
+    Layout = "~/Areas/Admin/Views/Shared/LayoutADMIN.cshtml";
+}
+
+<h2 class="text-center">Quản Lý Phiếu Thu</h2>
+
+<!-- Thông báo -->
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success">@TempData["SuccessMessage"]</div>
+}
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
+}
+
+<div id="dropArea" style="border: 2px dashed #ccc; padding: 20px; text-align: center;">
+    Kéo thả file Excel vào đây hoặc click để chọn file.
+    <input type="file" id="fileInput" style="display: none;" accept=".xlsx, .xls" />
+</div>
+
+<script>
+    const dropArea = document.getElementById('dropArea');
+    const fileInput = document.getElementById('fileInput');
+
+    // Mở file input khi click
+    dropArea.addEventListener('click', () => fileInput.click());
+
+    // Xử lý file khi kéo thả vào
+    dropArea.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        dropArea.style.backgroundColor = '#f0f0f0';
+    });
+
+    dropArea.addEventListener('dragleave', () => {
+        dropArea.style.backgroundColor = '';
+    });
+
+    dropArea.addEventListener('drop', (e) => {
+        e.preventDefault();
+        dropArea.style.backgroundColor = '';
+        const file = e.dataTransfer.files[0];
+        if (file) {
+            uploadFile(file);
+        }
+    });
+
+    fileInput.addEventListener('change', () => {
+        const file = fileInput.files[0];
+        if (file) {
+            uploadFile(file);
+        }
+    });
+
+    function uploadFile(file) {
+        console.log("File được chọn:", file);
+
+        const formData = new FormData();
+        formData.append('excelFile', file);
+
+        // Kiểm tra file trong FormData
+        for (let pair of formData.entries()) {
+            console.log(pair[0], pair[1]);
+        }
+
+        fetch('@Url.Action("ImportPhieuThu", "PhieuThu")', {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'Accept': 'application/json'
+            }
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Tải lên thất bại');
+            }
+            return response.json();
+        })
+        .then(data => {
+            // Hiển thị thông báo từ dữ liệu JSON trả về
+            if (data.success) {
+                alert(data.message); // Thông báo thành công
+            } else {
+                alert('Lỗi: ' + data.message); // Thông báo lỗi
+            }
+
+            console.log("Server response:", data);
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Có lỗi xảy ra khi tải lên!');
+        });
+    }
+</script>
+
+
+
+
+
+
+
+<hr />
+
+<!-- Bảng phiếu thu -->
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>MaPT</th>
+            <th>Thời Gian</th>
+            <th>Mã Nhân Viên</th>
+            <th>Mã Nhà Cung Cấp</th>
+            <th>Tổng Tiền</th>
+            <th>Chi Tiết</th> <!-- Cột Chi Tiết -->
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.MaPT</td>
+                <td>@(item.ThoiGian.HasValue ? item.ThoiGian.Value.ToString("dd/MM/yyyy") : "N/A")</td>
+                <td>@item.MaNV</td>
+                <td>@item.MaNCC</td>
+                <td>@String.Format("{0:#,##0} VNĐ", item.TongTien)</td>
+                <td>
+                    <!-- Liên kết Chi Tiết, chuyển hướng đến trang chi tiết -->
+                    <a href="@Url.Action("ShowDetails", "PhieuThu", new { maPT = item.MaPT })" class="btn btn-info">Chi Tiết</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+<div id="detailArea"></div>
+<script>
+    function showDetails(maPT) {
+        // Gửi request tới controller để lấy danh sách chi tiết theo MaPT
+        $.ajax({
+            url: '@Url.Action("ShowDetails", "PhieuThu")',
+            type: 'GET',
+            data: { maPT: maPT },
+            success: function (data) {
+                // Hiển thị danh sách chi tiết vào một phần của trang (ví dụ: div với id="detailArea")
+                $('#detailArea').html(data);
+            },
+            error: function () {
+                alert("Có lỗi xảy ra khi tải chi tiết!");
+            }
+        });
+    }
+</script>

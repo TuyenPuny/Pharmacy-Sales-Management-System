@@ -1,0 +1,81 @@
+﻿@model IEnumerable<DoAnTotNghiep_WebMinhChau.Areas.Admin.Models.HoaDon>
+
+@{
+    ViewBag.Title = "Đơn Hàng";
+    Layout = "~/Areas/Admin/Views/Shared/LayoutADMIN.cshtml";
+    <!-- jQuery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+}
+
+
+<table class="table">
+    <tr>
+        <th>Họ Tên</th>
+        <th>Thời Gian</th>
+        <th>SĐT</th>
+        <th>Hình Thức Nhận Hàng</th>
+        <th>Phương Thức Thanh Toán</th>
+        <th>Tổng Tiền</th>
+        <th>Trạng Thái</th>
+        <th></th>
+    </tr>
+
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.HoTen)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.thoiGian)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.SDT)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.HinhThucNhanHanh)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.PTTT)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.TongTien)
+            </td>
+            <td style="width:300px">
+                @using (Html.BeginForm("UpdateStatus", "DonHang", FormMethod.Post))
+                {
+                    @Html.Hidden("MaHD", item.MaHD)
+                    <div class="d-flex align-items-center gap-2">
+                        <!-- Sử dụng gap để tạo khoảng cách -->
+                        @Html.DropDownList("TrangThai",
+                            new SelectList(new List<SelectListItem> {
+                                new SelectListItem { Text = item.TrangThai, Value = item.TrangThai },
+                                new SelectListItem { Text = "Chờ xác nhận", Value = "Chờ xác nhận" },
+                                new SelectListItem { Text = "Đang đóng gói", Value = "Đang đóng gói" },
+                                new SelectListItem { Text = "Đã giao cho đơn vị vận chuyển", Value = "Đã giao cho đơn vị vận chuyển" },
+                                new SelectListItem { Text = "Chờ nhận hàng", Value = "Chờ nhận hàng" },
+                                new SelectListItem { Text = "Giao hàng thành công", Value = "Giao hàng thành công" }
+                            }, "Value", "Text", item.TrangThai),
+                            new { @class = "form-control" })
+
+                        <button type="submit" class="btn btn-primary" title="Cập nhật trạng thái" style="margin-left:10px">
+                            <i class="fas fa-sync"></i>
+                        </button>
+
+                        <a style="margin-left:10px" href="@Url.Action("ChiTiet", "DonHang", new { maHD = item.MaHD })"
+                                class="btn btn-secondary" title="Chi tiết">
+                            <i class="fas fa-edit"></i>
+                        </a>
+                    </div>
+                }
+            </td>
+        </tr>
+    }
+</table>

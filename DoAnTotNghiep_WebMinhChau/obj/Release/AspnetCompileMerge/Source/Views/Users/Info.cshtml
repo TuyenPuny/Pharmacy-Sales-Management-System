@@ -1,0 +1,156 @@
+﻿@model DoAnTotNghiep_WebMinhChau.Models.KhachHang
+
+@{
+    ViewBag.Title = "Info";
+    Layout = "~/Views/Shared/_LayoutGeneral.cshtml";
+}
+
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+
+    <div class="container mt-4">
+        <h4 class="text-center">Thông tin Khách Hàng</h4>
+        <hr />
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        @Html.HiddenFor(model => model.EmailKH)
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div class="alert alert-success text-center">
+                @TempData["SuccessMessage"]
+            </div>
+        }
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                @Html.Label("Họ Tên", htmlAttributes: new { @class = "form-label" })
+                @Html.EditorFor(model => model.HoTen, new { htmlAttributes = new { @class = "form-control", placeholder = "Nhập họ tên" } })
+                @Html.ValidationMessageFor(model => model.HoTen, "", new { @class = "text-danger" })
+            </div>
+
+            <div class="col-md-6 mb-3">
+                @Html.Label("Năm Sinh", htmlAttributes: new { @class = "form-label" })
+                @Html.TextBoxFor(model => model.NamSinh, new { @class = "form-control", placeholder = "Nhập năm sinh", id = "namSinh", maxlength = "4", title = "Năm sinh phải trong khoảng từ 1900 đến năm hiện tại." })
+                @Html.ValidationMessageFor(model => model.NamSinh, "", new { @class = "text-danger" })
+            </div>
+
+
+            <div class="col-md-12">
+                <label for="tinh" class="form-label">Tỉnh Thành</label>
+                <select class="form-select" id="tinh" name="TinhThanh" required>
+                    <option value="@(Session["Name"] != null ? Model.TinhThanh : "")">@(Session["Name"] != null ? Model.TinhThanh : "Chọn Tỉnh Thành")</option>
+                </select>
+            </div>
+
+            <div class="col-md-12">
+                <label for="quan" class="form-label">Quận Huyện</label>
+                <select class="form-select" id="quan" name="QuanHuyen" required>
+                    <option value="@(Session["Name"] != null ? Model.QuanHuyen : "")">@(Session["Name"] != null ? Model.QuanHuyen : "Chọn Quận Huyện")</option>
+                </select>
+            </div>
+            <div class="col-md-12">
+                <label for="phuong" class="form-label">Phường Xã</label>
+                <select class="form-select" id="phuong" name="PhuongXa" required>
+                    <option value="@(Session["Name"] != null ? Model.PhuongXa : "")">@(Session["Name"] != null ? Model.PhuongXa : "Chọn Phường Xã")</option>
+                </select>
+            </div>
+
+            <div class="col-md-6 mb-3">
+                @Html.Label("Địa chỉ", htmlAttributes: new { @class = "form-label" })
+                @Html.EditorFor(model => model.DiaChi, new { htmlAttributes = new { @class = "form-control", placeholder = "Nhập địa chỉ" } })
+                @Html.ValidationMessageFor(model => model.DiaChi, "", new { @class = "text-danger" })
+            </div>
+
+            <div class="col-md-6 mb-3">
+                @Html.Label("Giới tính", htmlAttributes: new { @class = "form-label" })
+                @Html.DropDownListFor(model => model.GioiTinh,
+                    new SelectList(new[] {
+                        new { Value = "Nam", Text = "Nam" },
+                        new { Value = "Nu", Text = "Nữ" },
+                        new { Value = "Khac", Text = "Khác" }
+                    }, "Value", "Text"),
+                    "Chọn giới tính",
+                    new { @class = "form-select" })
+                @Html.ValidationMessageFor(model => model.GioiTinh, "", new { @class = "text-danger" })
+            </div>
+
+            <div class="col-md-6 mb-3">
+                @Html.Label("Số điện thoại", htmlAttributes: new { @class = "form-label" })
+                @Html.EditorFor(model => model.SDT, new { htmlAttributes = new { @class = "form-control", placeholder = "Nhập số điện thoại", id = "soDienThoai", maxlength = "10", pattern = "^0\\d{9}$", title = "Số điện thoại phải bắt đầu bằng 0 và có 10 chữ số." } })
+                @Html.ValidationMessageFor(model => model.SDT, "", new { @class = "text-danger" })
+            </div>
+            <div class="col-md-12 mt-3 text-center">
+                <input type="submit" value="Cập nhật thông tin" class="btn btn-primary" />
+            </div>
+            <div class="col-md-12 mt-3 text-center">
+                <button type="button" class="btn btn-warning" id="changePasswordBtn" onclick="location.href='/Users/ChangePassword'">Đổi mật khẩu</button>
+            </div>
+        </div>
+    </div>}
+
+<script src="https://esgoo.net/scripts/jquery.js"></script>
+<script>
+    $(document).ready(function () {
+        // Load provinces
+        $.getJSON('https://esgoo.net/api-tinhthanh/1/0.htm', function (data_tinh) {
+            if (data_tinh.error == 0) {
+                $.each(data_tinh.data, function (key_tinh, val_tinh) {
+                    // Gán ID vào thuộc tính data-id của thẻ <option>
+                    $("#tinh").append('<option value="' + val_tinh.full_name + '" data-id="' + val_tinh.id + '">' + val_tinh.full_name + '</option>');
+                });
+
+                $("#tinh").change(function () {
+                    // Lấy ID tỉnh đã chọn từ data-id
+                    var idtinh = $(this).find('option:selected').data('id');
+                    console.log("ID tỉnh đã chọn: " + idtinh); // Kiểm tra ID tỉnh
+
+                    // Load districts
+                    $.getJSON('https://esgoo.net/api-tinhthanh/2/' + idtinh + '.htm', function (data_quan) {
+                        if (data_quan.error == 0) {
+                            $("#quan").html('<option value="">Chọn Quận Huyện</option>');
+                            $("#phuong").html('<option value="">Chọn Phường Xã</option>');
+                            $.each(data_quan.data, function (key_quan, val_quan) {
+                                // Gán ID quận vào thuộc tính data-id của thẻ <option>
+                                $("#quan").append('<option value="' + val_quan.full_name + '" data-id="' + val_quan.id + '">' + val_quan.full_name + '</option>');
+                            });
+
+                            // Load wards
+                            $("#quan").change(function () {
+                                // Lấy ID quận đã chọn từ data-id
+                                var idquan = $(this).find('option:selected').data('id');
+                                console.log("ID quận đã chọn: " + idquan); // Kiểm tra ID quận
+
+                                $.getJSON('https://esgoo.net/api-tinhthanh/3/' + idquan + '.htm', function (data_phuong) {
+                                    if (data_phuong.error == 0) {
+                                        $("#phuong").html('<option value="">Chọn Phường Xã</option>');
+                                        $.each(data_phuong.data, function (key_phuong, val_phuong) {
+                                            // Gán ID phường vào thuộc tính data-id của thẻ <option>
+                                            $("#phuong").append('<option value="' + val_phuong.full_name + '" data-id="' + val_phuong.id + '">' + val_phuong.full_name + '</option>');
+                                        });
+                                    }
+                                });
+                            });
+                        }
+                    });
+                });
+            }
+        });
+    });
+</script>
+
+<script>
+    document.getElementById("namSinh").addEventListener("input", function () {
+        var currentYear = new Date().getFullYear(); // Lấy năm hiện tại
+        var enteredYear = parseInt(this.value); // Lấy năm người dùng nhập vào
+
+        // Kiểm tra nếu năm nhập vào lớn hơn năm hiện tại
+        if (enteredYear > currentYear) {
+            this.setCustomValidity("Năm sinh không được lớn hơn năm hiện tại.");
+        } else {
+            this.setCustomValidity(""); // Nếu hợp lệ, xóa thông báo lỗi
+        }
+    });
+</script>
+
+
+

@@ -1,0 +1,13 @@
+﻿
+@{
+    ViewBag.Title = "PaymentFail";
+    Layout = "~/Views/Shared/_LayoutGeneral.cshtml";
+    ViewData["Title"] = "Fail";
+
+}
+
+
+<div class="container text-center">
+    <h2 class="text-danger">@TempData["Message"]</h2>
+    <a href="@Url.Action("Index", "Home")" class="btn btn-primary">Trở Về Trang Chủ</a>
+</div>

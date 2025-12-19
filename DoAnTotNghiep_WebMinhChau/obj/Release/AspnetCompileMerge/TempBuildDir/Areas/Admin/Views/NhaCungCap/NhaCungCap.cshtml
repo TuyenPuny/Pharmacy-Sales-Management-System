@@ -1,0 +1,126 @@
+﻿@model IEnumerable<DoAnTotNghiep_WebMinhChau.Areas.Admin.Models.NhaCungCap>
+
+@{
+    ViewBag.Title = "NhaCungCap";
+    Layout = "~/Areas/Admin/Views/Shared/LayoutADMIN.cshtml";
+}
+
+<style>
+    .search-container {
+        display: flex;
+        align-items: center;
+        max-width: 800px;
+        margin: 20px auto;
+    }
+
+        .search-container input {
+            flex: 1;
+            padding: 8px 12px;
+            border-radius: 20px 0 0 20px;
+            border: 1px solid #ccc;
+            border-right: none;
+        }
+
+        .search-container button {
+            padding: 8px 16px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 0 20px 20px 0;
+            cursor: pointer;
+        }
+
+    .actions {
+        display: flex;
+        align-items: center;
+        margin-left: 20px;
+    }
+
+        .actions .create-new {
+            background-color: #28a745;
+            color: #fff;
+            border: none;
+            border-radius: 20px;
+            padding: 6px 12px;
+            margin-right: 10px;
+            cursor: pointer;
+        }
+
+        .actions .count {
+            background-color: #f8f9fa;
+            border: 1px solid #ced4da;
+            border-radius: 20px;
+            padding: 6px 12px;
+        }
+</style>
+
+<!-- Form tìm kiếm -->
+<form class="search-container" method="get" action="@Url.Action("NhaCungCap", "NhaCungCap")">
+    @using (Html.BeginForm("Search", "NhaCungCap", FormMethod.Get))
+    {
+        <input type="text" name="searchTerm" value="@Request.QueryString["searchTerm"]" placeholder="Tìm kiếm nhà cung cấp" />
+        <button type="submit">Tìm</button>
+        <div class="actions">
+            @if (Session["Role"] == "ADMIN")
+            {
+                <button type="button" class="create-new btn btn-primary" onclick="window.location.href='@Url.Action("Create", "NhaCungCap")'">Thêm nhà cung cấp</button>
+            }          
+            <div class="count">Số lượng NCC: @ViewBag.SLNCC</div>
+        </div>
+    }
+
+</form>
+
+<!-- Bảng hiển thị kết quả -->
+<table class="table">
+    <thead>
+        <tr>
+            <th>Mã NCC</th>
+            <th>Tên nhà cung cấp</th>
+            <th>Địa chỉ</th>
+            <th>Điện thoại</th>
+            <th>Email</th>
+            <th>Trạng thái</th>
+            @if (Session["Role"] == "ADMIN")
+            {
+                <th>Hành động</th>
+            }
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model.Any())
+        {
+            foreach (var item in Model)
+            {
+                <tr>
+                    <td>@Html.DisplayFor(modelItem => item.MaNCC)</td>
+                    <td>@Html.DisplayFor(modelItem => item.TenNCC)</td>
+                    <td>@Html.DisplayFor(modelItem => item.DiaChi)</td>
+                    <td>@Html.DisplayFor(modelItem => item.DienThoai)</td>
+                    <td>@Html.DisplayFor(modelItem => item.Email)</td>
+                    <td>
+                        @if (item.TrangThai == "Ngưng hợp tác")
+                        {
+                            <span style="color:red;">@Html.DisplayFor(modelItem => item.TrangThai)</span> }
+                        else
+                        {
+                            @Html.DisplayFor(modelItem => item.TrangThai)}
+                    </td>
+
+                    <td>
+                        @if (Session["Role"] == "ADMIN")
+                        {
+                            @Html.ActionLink("Sửa", "Edit", new { id = item.MaNCC.Trim() }, new { @class = "btn btn-primary btn-sm" })
+                        }
+                    </td>
+                </tr>
+            }
+        }
+        else
+        {
+            <tr>
+                <td colspan="6">Không tìm thấy nhà cung cấp nào</td>
+            </tr>
+        }
+    </tbody>
+</table>

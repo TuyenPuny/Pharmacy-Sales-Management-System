@@ -1,0 +1,78 @@
+﻿@model DoAnTotNghiep_WebMinhChau.Areas.Admin.Models.NhanVien
+
+@{
+    ViewBag.Title = "Cập nhật thông tin nhân viên";
+    Layout = "~/Areas/Admin/Views/Shared/LayoutADMIN.cshtml";
+}
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+
+    <div class="container" style="max-width: 600px; margin-top: 30px;">
+        <h2 class="text-center">Cập nhật thông tin nhân viên</h2>
+        <hr />
+
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        @Html.HiddenFor(model => model.MaNV)
+
+        <div class="form-group">
+            <label for="HoTen" class="control-label">Họ và tên</label>
+            @Html.EditorFor(model => model.HoTen, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.ValidationMessageFor(model => model.HoTen, "", new { @class = "text-danger" })
+        </div>
+
+        <div class="form-group">
+            <label for="NamSinh" class="control-label">Năm sinh</label>
+            @Html.EditorFor(model => model.NamSinh, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.ValidationMessageFor(model => model.NamSinh, "", new { @class = "text-danger" })
+        </div>
+
+        <div class="form-group">
+            <label for="DiaChi" class="control-label">Địa chỉ</label>
+            @Html.EditorFor(model => model.DiaChi, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.ValidationMessageFor(model => model.DiaChi, "", new { @class = "text-danger" })
+        </div>
+
+        <div class="form-group">
+            <label for="GioiTinh" class="control-label">Giới tính</label>
+            @Html.DropDownListFor(model => model.GioiTinh, new List<SelectListItem>
+            {
+                new SelectListItem { Text = "Nam", Value = "Nam" },
+                new SelectListItem { Text = "Nữ", Value = "Nữ" },
+                new SelectListItem { Text = "Khác", Value = "Khác" }
+            }, "Chọn giới tính", new { @class = "form-control" })
+            @Html.ValidationMessageFor(model => model.GioiTinh, "", new { @class = "text-danger" })
+        </div>
+
+        <div class="form-group">
+            <label for="SDT" class="control-label">Số điện thoại</label>
+            @Html.EditorFor(model => model.SDT, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.ValidationMessageFor(model => model.SDT, "", new { @class = "text-danger" })
+        </div>
+
+        <div class="form-group">
+            <label for="TrangThai" class="control-label">Trạng thái</label>
+            @Html.DropDownListFor(model => model.TrangThai, new List<SelectListItem>
+            {
+                new SelectListItem { Text = "Đang làm việc", Value = "Đang làm việc" },
+                new SelectListItem { Text = "Đang thử việc", Value = "Đang thử việc" }
+            }, "Chọn trạng thái", new { @class = "form-control" })
+            @Html.ValidationMessageFor(model => model.TrangThai, "", new { @class = "text-danger" })
+        </div>
+
+        <div class="form-group">
+            <label for="NgayVaoLam" class="control-label">Ngày vào làm</label>
+            @Html.EditorFor(model => model.NgayVaoLam, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.ValidationMessageFor(model => model.NgayVaoLam, "", new { @class = "text-danger" })
+        </div>
+
+        <div class="form-group text-center">
+            <button type="submit" class="btn btn-primary">Lưu</button>
+        </div>
+
+        <div class="text-center">
+            @Html.ActionLink("Quay lại danh sách", "NhanVien", null, new { @class = "btn btn-secondary" })
+        </div>
+    </div>
+}

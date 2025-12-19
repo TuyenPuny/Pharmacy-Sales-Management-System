@@ -1,0 +1,116 @@
+﻿@{
+    ViewBag.Title = "TinTuc";
+    Layout = "~/Views/Shared/_LayoutGeneral.cshtml";
+
+}
+
+<style>
+    .main-content {
+        padding-top: 20px;
+    }
+
+    .main-image {
+        position: relative;
+        width: 100%;
+        height: auto;
+    }
+
+    .overlay {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: rgba(0, 0, 0, 0.6);
+        color: #fff;
+        padding: 10px;
+    }
+
+    .side-articles img {
+        width: 200px;
+        height: auto;
+    }
+
+    .side-articles a {
+        color: #000;
+        font-size: 18px;
+        padding-left: 15px;
+        text-decoration: none;
+    }
+
+        .side-articles a:hover {
+            text-decoration: underline;
+        }
+
+    .side-article-item {
+        margin-bottom: 15px;
+    }
+</style>
+
+<div class="container main-content">
+    <h3 class="text-primary">Xương Khớp</h3>
+    <div class="row">
+        <!-- Main Article -->
+        <div class="col-lg-8">
+            <div class="card">
+                <img src="~/Assets/Image/tintucXuong.jpg" class="card-img-top main-image" alt="Main Article Image">
+                <div class="overlay">
+                    <h5 class="card-title">Lời Khuyên Chuyên Gia: Bệnh Gút Nên Kiêng Cữ Những Gì?</h5>
+                    <p class="card-text">Người mắc bệnh gút cần có một chế độ ăn uống nghiêm khắc và hợp lý...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Side Articles -->
+        <div class="col-lg-4">
+            <div class="side-articles">
+                <div class="side-article-item d-flex align-items-center">
+                    <img src="~/Assets/Image/thethao.jpg" />
+                    <a href="#" class="ml-3">Chia Sẻ: 10 Bài tập yoga chữa đau thắt lưng tại nhà</a>
+                </div>
+                <div class="side-article-item d-flex align-items-center">
+                    <img src="~/Assets/Image/dauxuong.jpg" />
+                    <a href="#" class="ml-3">Giải Đáp: Đau thắt lưng ở nam giới là triệu chứng bệnh gì?</a>
+                </div>
+                <div class="side-article-item d-flex align-items-center">
+                    <img src="~/Assets/Image/dauvai.jpg" />
+                    <a href="#" class="ml-3">Nguyên nhân và triệu chứng đau lưng trên bên phải</a>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+<br />
+<br />
+<div class="container mt-4">
+    <h3 class="text-primary">Nguyên nhân chính gây ra đau lưng phía bên phải</h3>
+
+    <h5>Nguyên nhân cơ học:</h5>
+    <ul>
+        <li>Do hoạt động sai tư thế, nâng vác nặng, đeo balo nặng, chấn thương.</li>
+    </ul>
+
+    <h4>Nguyên nhân bệnh lý:</h4>
+    <ul>
+        <li>Thoát vị đĩa đệm, thoái hóa cột sống, loãng xương, rối loạn khớp sacroiliac, bệnh tim mạch, nhiễm khuẩn/virus.</li>
+    </ul>
+
+    <h5>Đối tượng dễ mắc bệnh:</h5>
+    <ul>
+        <li>Người lao động chân tay nặng nhọc, dân văn phòng, người thường xuyên chơi thể thao.</li>
+        <li>Phụ nữ có thai, đặc biệt ở tuần cuối.</li>
+        <li>Những người có vấn đề về cột sống như chấn thương, thoái hóa.</li>
+    </ul>
+
+    <h5>Biểu hiện và nguyên nhân đau lưng bên phải:</h5>
+    <ul>
+        <li>Đau âm ỉ, đau nhói đột ngột hoặc đau buốt kéo dài.</li>
+        <li>Đau liên tục hoặc đau khi khiêng vác vật nặng.</li>
+        <li>Đau lan lên vai, bả vai, có thể do các vấn đề như nhồi máu cơ tim, nứt động mạch chủ, sỏi mật, viêm túi mật, u gan.</li>
+        <li>Đau lưng tăng khi ho có thể do tràn khí màng phổi, viêm phổi, viêm phế quản.</li>
+    </ul>
+
+    <div class="alert alert-warning mt-4">
+        <strong>Lưu ý:</strong> Cần chú ý khi đau lưng bên phải kèm theo các triệu chứng như sốt, khó thở, vì có thể liên quan đến các bệnh lý nguy hiểm ở lồng ngực, cần được khám và điều trị kịp thời.
+    </div>
+</div>

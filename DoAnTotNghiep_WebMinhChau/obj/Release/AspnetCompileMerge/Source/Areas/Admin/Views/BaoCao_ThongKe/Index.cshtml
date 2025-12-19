@@ -1,0 +1,371 @@
+﻿@model DoAnTotNghiep_WebMinhChau.Areas.Admin.Models.BC_ThongKe
+@{
+    ViewBag.Title = "Index";
+    Layout = ViewBag.IsPrint ? null : "~/Areas/Admin/Views/Shared/LayoutADMIN.cshtml";
+    var productStats = ViewBag.ProductStats as IEnumerable<DoAnTotNghiep_WebMinhChau.Areas.Admin.Models.ProductStat>;
+    var orderStats = ViewBag.OrderStats as IEnumerable<DoAnTotNghiep_WebMinhChau.Areas.Admin.Models.OrderStatusStat>;
+}
+<style>
+    #myChart {
+        margin-left: 100px;
+        width: 100% !important;
+        max-width: 1400px;
+        height: 600px !important;
+    }
+
+    #inventoryPieChart {
+        width: 100% !important;
+        max-width: 300px;
+        height: 300px !important;
+    }
+
+    #orderStatusChart {
+        margin-left: 150px;
+        width: 80% !important;
+        height: 500px !important;
+    }
+
+    /* In báo cáo */
+    @@media print {
+        #sidebar-wrapper, .navbar, button[type="submit"], button[type="button"] {
+            display: none !important;
+        }
+
+        * {
+            width: auto !important;
+            height: auto !important;
+            box-sizing: border-box !important;
+        }
+
+        Form chọn thời gian
+        form {
+            display: block !important;
+        }
+
+        .print-title {
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+            margin-top: 20px;
+        }
+    }
+</style>
+<div class="print-title text-center">
+    <h2>THỐNG KÊ DOANH THU</h2>
+</div>
+<form method="get" class="mt-4 border p-3">
+    <h5>Chọn thời gian:</h5>
+    <div class="row align-items-end">
+        <div class="form-group col-md-5 d-flex">
+            <label for="startDate" class="me-4 align-self-center" style="width: 160px; font-size:17px">Ngày bắt đầu:</label>
+            <input type="date" id="startDate" name="startDate" value="@ViewBag.StartDate" class="form-control" style="width: 280px;" />
+        </div>
+        <div class="form-group col-md-5 d-flex">
+            <label for="endDate" class="me-4 align-self-center" style="width: 140px; font-size:18px">Ngày kết thúc:</label>
+            <input type="date" id="endDate" name="endDate" value="@ViewBag.EndDate" class="form-control" style="width: 280px;" />
+        </div>
+        <div class="form-group col-md-2 d-flex justify-content-start align-items-center">
+            <button type="submit" class="btn btn-primary mr-2">Thống kê</button>
+            <button type="button" class="btn btn-primary" onclick="window.print();">
+                <i class="fas fa-print"></i> In
+            </button>
+        </div>
+
+    </div>
+</form>
+
+@if (ViewBag.ErrorMessage != null)
+{
+    <div class="alert alert-danger">@ViewBag.ErrorMessage</div>
+}
+else
+{
+    <div class="border p-4">
+        <div class="row">
+            @foreach (var stat in new[] {
+                new { Title = "Tổng số đơn hàng", Value = ViewBag.TongSoDonHang },
+                new { Title = "Tổng doanh thu", Value = @String.Format("{0:N0} VNĐ", ViewBag.TongDoanhThu) },
+                new { Title = "Số sản phẩm đã bán", Value = ViewBag.TongSoLuongSanPham },
+                new { Title = "Lợi nhuận", Value = @String.Format("{0:N0} VNĐ", ViewBag.LoiNhuan) }
+            })
+            {
+                <div class="col-md-3">
+                    <div class="card text-center mb-3">
+                        <div class="card-header bg-light">
+                            <strong>@stat.Title</strong>
+                        </div>
+                        <div class="card-body">
+                            <h5 class="card-title">@stat.Value</h5>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <div>
+            <h2>Thống kê doanh thu</h2>
+            <canvas id="myChart" width="400" height="200" style="padding:30px"></canvas>
+            <label style="text-align: center; display: block; margin: 0 auto;">Thống kê doanh thu - số lượng theo từng sản phẩm</label>
+        </div>
+        <br />
+        <hr />
+        <div class="mt-12">
+            <h2>Thống kê kho thuốc</h2><br />
+            <div class="row">
+                <div class="col-md-4">
+                    <canvas id="inventoryPieChart"></canvas>
+                    <label style="text-align: center; display: block; margin: 0 auto;">Biểu đồ phân bố hàng tồn kho</label>
+                </div>
+                <div class="col-md-8">
+                    @if (ViewBag.Products != null)
+                    {
+                        <h5 style="text-align:center">Danh sách sản phẩm gần hết hạn</h5>
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Mã sản phẩm</th>
+                                    <th>Tên sản phẩm</th>
+                                    <th>Hạn sử dụng</th>
+                                    <th>Số lượng tồn</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in ViewBag.Products)
+                                {
+                                    <tr>
+                                        <td>@item.MaSP</td>
+                                        <td>@item.TenSP</td>
+                                        <td>@item.HSD.ToString("dd/MM/yyyy")</td>
+                                        <td>@item.SoLuongTon</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    }
+                    else
+                    {
+                        <p>Không có sản phẩm gần hết hạn.</p>
+                    }
+                </div>
+
+                <div class="col-md-8" style="margin-top: -75px;margin-left: 515px;">
+                    @if (ViewBag.Products_Hethan != null)
+                    {
+                        <h5 style="text-align:center">Danh sách sản phẩm đã hết hạn</h5>
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Mã sản phẩm</th>
+                                    <th>Tên sản phẩm</th>
+                                    <th>Hạn sử dụng</th>
+                                    <th>Số lượng tồn</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in ViewBag.Products_Hethan)
+                                {
+                                    <tr>
+                                        <td>@item.MaSP</td>
+                                        <td>@item.TenSP</td>
+                                        <td>@item.HSD.ToString("dd/MM/yyyy")</td>
+                                        <td>@item.SoLuongTon</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    }
+                    else
+                    {
+                        <p>Không có sản phẩm gần hết hạn.</p>
+                    }
+                </div>
+            </div>
+            <br />
+            <br /><hr />
+            <br />
+            <h2>Thống kê trạng thái đơn hàng</h2><br />
+            <div style="padding: 0  50px">
+                <canvas id="orderStatusChart"></canvas>
+            </div><br />
+            <br /><hr />
+            <h2 style="text-align:center">Top 10 sản phẩm bán chạy</h2><br />
+            <div class="col-md-12">
+                @if (ViewBag.ProductsTop10 != null)
+                {
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Mã sản phẩm</th>
+                                <th>Tên sản phẩm</th>
+                                <th>Số lượng </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in ViewBag.ProductsTop10)
+                            {
+                                <tr>
+                                    <td>@item.MaSP</td>
+                                    <td>@item.TenSP</td>
+                                    <td>@item.TongSoLuongBan</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                }
+                else
+                {
+                    <p>Không có sản phẩm gần hết hạn.</p>
+                }
+            </div>
+        </div>
+    </div>
+}
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            // Biểu đồ doanh thu theo sản phẩm
+            const productStats = @Html.Raw(Json.Encode(ViewBag.ProductStats)) || [];
+            const labels = productStats.map(stat => stat.MaSP);
+            const doanhThu = productStats.map(stat => stat.DoanhThuSP);
+            const soLuong = productStats.map(stat => stat.TongSoLuongSanPham);
+
+            const ctxBar = document.getElementById('myChart')?.getContext('2d');
+            if (ctxBar) {
+                new Chart(ctxBar, {
+                    type: 'bar',
+                    data: {
+                        labels,
+                        datasets: [
+                            {
+                                label: 'Doanh thu (VNĐ)',
+                                data: doanhThu,
+                                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                                borderColor: 'rgba(75, 192, 192, 1)',
+                                borderWidth: 1,
+                                yAxisID: 'y1',
+                            },
+                            {
+                                label: 'Số lượng sản phẩm',
+                                data: soLuong,
+                                borderColor: 'rgba(255, 99, 132, 1)',
+                                backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                                borderWidth: 1,
+                                yAxisID: 'y2',
+                                type: 'line',
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            datalabels: {
+                                anchor: 'end',
+                                align: 'end',
+                                color: 'black',
+                            }
+                        },
+                        scales: {
+                            y1: {
+                                beginAtZero: true,
+                                position: 'left',
+                            },
+                            y2: {
+                                beginAtZero: true,
+                                position: 'right',
+                            }
+                        }
+                    },
+                    plugins: [ChartDataLabels]
+                });
+            }
+
+            // Biểu đồ phân bố hàng tồn kho
+            const ctxPie = document.getElementById('inventoryPieChart').getContext('2d');
+            if (ctxPie) {
+                const phanTramHetHang = parseFloat('@ViewBag.PhanTramHetHang');
+                const phanTramSapHet = parseFloat('@ViewBag.PhanTramSapHet');
+                const phanTramConHang = parseFloat('@ViewBag.PhanTramConHang');
+
+                new Chart(ctxPie, {
+                    type: 'pie',
+                    data: {
+                        labels: ['Hết hàng', 'Sắp hết hàng', 'Còn hàng'],
+                        datasets: [{
+                            data: [phanTramHetHang, phanTramSapHet, phanTramConHang],
+                            backgroundColor: [
+                                'rgba(255, 99, 132, 0.6)',  // Màu cho "Hết hàng"
+                                'rgba(255, 206, 86, 0.6)',  // Màu cho "Sắp hết hàng"
+                                'rgba(75, 192, 192, 0.6)'   // Màu cho "Còn hàng"
+                            ],
+                            borderColor: [
+                                'rgba(255, 99, 132, 1)',
+                                'rgba(255, 206, 86, 1)',
+                                'rgba(75, 192, 192, 1)'
+                            ],
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: {
+                                position: 'top',
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function (context) {
+                                        return context.label + ': ' + context.raw.toFixed(2) + '%';
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Biểu đồ trạng thái đơn hàng
+            const ctxOrderStatus = document.getElementById('orderStatusChart').getContext('2d');
+            var orderStatusChart = new Chart(ctxOrderStatus, {
+                type: 'bar',
+                data: {
+                    labels: @Html.Raw(Json.Encode(ViewBag.OrderStatusLabels)),
+                    datasets: [{
+                        label: 'Số đơn hàng theo trạng thái',
+                        data: @Html.Raw(Json.Encode(ViewBag.OrderStatusData)),
+                        backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        datalabels: {
+                            anchor: 'end',
+                            align: 'end',
+                            color: 'black',
+                        }
+                    },
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Trạng thái đơn hàng'
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Số lượng'
+                            },
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+}

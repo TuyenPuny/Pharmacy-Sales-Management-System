@@ -1,0 +1,138 @@
+﻿
+@{
+    ViewBag.Title = "Sao lưu và phục hồi cơ sở dữ liệu";
+    Layout = "~/Areas/Admin/Views/Shared/LayoutADMIN.cshtml";
+}
+
+<div class="container mt-5">
+    <!-- Tiêu đề chính: Sao lưu và phục hồi cơ sở dữ liệu (màu đen và in đậm) -->
+    <h2 class="text-center mb-4 text-dark font-weight-bold">Sao lưu và phục hồi cơ sở dữ liệu</h2>
+
+    <!-- Form tạo sao lưu -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-success text-white">
+            <h5 class="card-title mb-0">Tạo sao lưu</h5>
+        </div>
+        <div class="card-body">
+            <form method="post" action="@Url.Action("CreateBackup", "Backup")" id="backupForm">               
+                <button type="submit" class="btn btn-success btn-lg mt-3 w-100">Tạo sao lưu</button>
+            </form>
+        </div>
+    </div>
+
+    @if (ViewBag.BackupStatus != null)
+    {
+        <div class="alert alert-success mt-3">
+            @ViewBag.BackupStatus
+        </div>
+    }
+
+    <!-- Phục hồi cơ sở dữ liệu -->
+    <div class="card shadow-sm mt-4">
+        <div class="card-header bg-success text-white">
+            <h5 class="card-title mb-0">Phục hồi cơ sở dữ liệu</h5>
+        </div>
+        <div class="card-body">
+            <form method="post" action="@Url.Action("RestoreDatabase", "Backup")" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label for="backupFile">Chọn file sao lưu (.bak) để phục hồi:</label>
+                    <input type="file" id="backupFile" name="backupFile" class="form-control" accept=".bak" required />
+                </div>
+                <button type="submit" class="btn btn-success btn-lg mt-3 w-100">Phục hồi cơ sở dữ liệu</button>
+            </form>
+        </div>
+    </div>
+
+    @if (ViewBag.RestoreStatus != null)
+    {
+        <div class="alert alert-success mt-3">
+            @ViewBag.RestoreStatus
+        </div>
+    }
+</div>
+
+<!-- JavaScript hiệu ứng cho các nút và form -->
+<script>
+    // Thêm hiệu ứng khi người dùng di chuột vào các nút
+    const btnSuccess = document.querySelector('.btn-success');
+
+    btnSuccess.addEventListener('mouseover', function () {
+        btnSuccess.style.backgroundColor = '#28a745'; // Đổi màu khi hover
+    });
+
+    btnSuccess.addEventListener('mouseout', function () {
+        btnSuccess.style.backgroundColor = '#218838'; // Màu mặc định khi không hover
+    });
+
+    // Tạo hiệu ứng khi submit form
+    document.getElementById('backupForm').addEventListener('submit', function (event) {
+        const fileName = document.getElementById('backupFileName').value;
+        if (!fileName) {
+            event.preventDefault();
+            alert('Vui lòng nhập tên file sao lưu!');
+        }
+    });
+</script>
+
+<!-- CSS tùy chỉnh -->
+<style>
+    .container {
+        max-width: 800px;
+    }
+
+    .card {
+        border-radius: 8px;
+        border: none;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .card-header {
+        border-radius: 8px 8px 0 0;
+    }
+
+    .card-body {
+        background-color: #fff;
+    }
+
+    .form-control {
+        border-radius: 5px;
+        border: 1px solid #ccc;
+        padding: 15px;
+        font-size: 16px;
+    }
+
+        .form-control:focus {
+            border-color: #28a745;
+            box-shadow: 0 0 5px rgba(40, 167, 69, 0.3);
+        }
+
+    .btn {
+        border-radius: 5px;
+        transition: background-color 0.3s, transform 0.3s;
+    }
+
+    .btn-lg {
+        font-size: 18px;
+        padding: 12px;
+    }
+
+    .btn:hover {
+        transform: scale(1.05);
+    }
+
+    .alert {
+        font-size: 16px;
+    }
+
+    .card-title {
+        font-size: 20px;
+    }
+
+    /* Thêm kiểu chữ cho tiêu đề */
+    h2.text-dark {
+        font-weight: bold;
+        color: black;
+    }
+</style>
+
+

@@ -1,0 +1,112 @@
+﻿
+
+@model IEnumerable<DoAnTotNghiep_WebMinhChau.Areas.Admin.Models.NhanVien>
+
+@{
+    ViewBag.Title = "NhanVien";
+    Layout = "~/Areas/Admin/Views/Shared/LayoutADMIN.cshtml";
+}
+
+<style>
+    .search-container {
+        display: flex;
+        align-items: center;
+        max-width: 800px;
+        margin: 20px auto;
+    }
+
+        .search-container input {
+            flex: 1;
+            padding: 8px 12px;
+            border-radius: 20px 0 0 20px;
+            border: 1px solid #ccc;
+            border-right: none;
+        }
+
+        .search-container button {
+            padding: 8px 16px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 0 20px 20px 0;
+            cursor: pointer;
+        }
+
+    .actions {
+        display: flex;
+        align-items: center;
+        margin-left: 20px;
+    }
+
+        .actions .create-new {
+            background-color: #28a745;
+            color: #fff;
+            border: none;
+            border-radius: 20px;
+            padding: 6px 12px;
+            margin-right: 10px;
+            cursor: pointer;
+        }
+
+        .actions .count {
+            background-color: #f8f9fa;
+            border: 1px solid #ced4da;
+            border-radius: 20px;
+            padding: 6px 12px;
+        }
+</style>
+
+<!-- Form tìm kiếm -->
+<form class="search-container" method="get" action="@Url.Action("NhanVien", "NhanVient")">
+    <input type="text" name="searchTerm" value="@Request.QueryString["searchTerm"]" placeholder="Tìm kiếm theo tên nhân viên" />
+    <button type="submit">Tìm</button>
+    <div class="actions">
+        <button type="button" class="create-new btn btn-primary" onclick="window.location.href='@Url.Action("Create", "NhanVient")'">Thêm nhân viên</button>
+        <div class="count">Số lượng nhân viên: @ViewBag.SLNV</div>
+    </div>
+</form>
+
+<!-- Bảng hiển thị kết quả -->
+<table class="table">
+    <thead>
+        <tr>
+            <th>Mã NV</th>
+            <th>Họ tên </th>
+            <th>Ngày vào làm</th>
+            <th>Địa chỉ</th>
+            <th>Năm sinh</th>
+            <th>Giới tính</th>
+            <th>SĐT</th>
+            <th>Trạng thái</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model.Any())
+        {
+            foreach (var item in Model)
+            {
+                <tr>
+                    <td>@Html.DisplayFor(modelItem => item.MaNV)</td>
+                    <td>@Html.DisplayFor(modelItem => item.HoTen)</td>
+                    <td>@(item.NgayVaoLam?.ToString("dd/MM/yyyy") ?? "N/A")</td>
+                    <td>@Html.DisplayFor(modelItem => item.DiaChi)</td>
+                    <td>@Html.DisplayFor(modelItem => item.NamSinh)</td>
+                    <td>@Html.DisplayFor(modelItem => item.GioiTinh)</td>
+                    <td>@Html.DisplayFor(modelItem => item.SDT)</td>
+                    <td>@Html.DisplayFor(modelItem => item.TrangThai)</td>
+                    <td>
+                        <a href="@Url.Action("Edit", "NhanVient", new { MaNV = item.MaNV })" class="btn-update btn btn-outline-info btn-sm me-2" ><i class="fas fa-edit"></i></a>
+                    </td>
+                </tr>
+            }
+        }
+        else
+        {
+            <tr>
+                <td colspan="6">Không tìm thấy nhân viên nào</td>
+            </tr>
+        }
+    </tbody>
+</table>
+

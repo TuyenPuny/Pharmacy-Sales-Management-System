@@ -1,0 +1,301 @@
+﻿@model DoAnTotNghiep_WebMinhChau.Areas.Admin.Models.SanPham
+
+@{ ViewBag.Title = "Edit";
+    Layout = "~/Areas/Admin/Views/Shared/LayoutADMIN.cshtml";
+    var chiTietSP = ViewBag.ChiTietSanPham as DoAnTotNghiep_WebMinhChau.Areas.Admin.Models.ChiTietSP; }
+<style>
+    .form-control {
+        font-size: 18px;
+        color: #333;
+    }
+
+    .col-form-label {
+        font-weight: bold;
+        font-size: 18px;
+    }
+
+    .form-container {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        padding: 15px;
+    }
+
+    .image-container {
+        flex: 1;
+        max-width: 400px; /* Limit the width of the image column */
+        padding-right: 15px; /* Space between the image and info */
+    }
+
+    .info-container {
+        flex: 2; /* Make the info section wider */
+        max-width: 600px; /* Limit the width of the info column */
+    }
+
+        .info-container .form-group {
+            margin-bottom: 15px; /* Space between form groups */
+        }
+
+        .info-container img {
+            max-width: 100%; /* Ensure image fits within its container */
+            max-height: 200px; /* Set a max height for the image */
+        }
+</style>
+
+<h3 style="text-align:center; color:blue; padding:15px">SỬA SẢN PHẨM</h3>
+<hr />
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success" id="successMessage">
+        @TempData["SuccessMessage"]
+    </div>}
+
+<!-- Display Error Messages -->
+@if (!ViewData.ModelState.IsValid)
+{
+    <div class="alert alert-danger">
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+    </div>}
+
+@using (Html.BeginForm("Edit", "SanPham", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    @Html.AntiForgeryToken()
+    <div class="container form-container">
+        <div class="image-container">
+            @if (!string.IsNullOrEmpty(Model.HinhAnh))
+            {
+                <img src="@Url.Content("~/Assets/Image/" + Model.HinhAnh)" alt="Hình ảnh sản phẩm" style="width: 450px;" />}
+            <div>
+                @Html.TextBoxFor(model => model.HinhAnh, new { @class = "form-control", @type = "file" })
+                @Html.ValidationMessageFor(model => model.HinhAnh, "", new { @class = "text-danger" })
+            </div>
+            <div class="form-group row" style="padding-top:80px">
+                <div class="col-md-6">
+                    @if (Session["Role"] == "ADMIN")
+                    {
+                        <div class="d-flex justify-content-start align-items-center">
+                            <input type="submit" value="Cập Nhật Thông Tin" class="btn btn-primary me-2" />
+                            <button type="button" class="btn btn-secondary" style="margin-left: 40px; white-space: nowrap;" onclick="window.location.href='@Url.Action("SanPham", "SanPham")'">
+                                Quay lại trang trước
+                            </button>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="col-md-6">
+                            <button type="button" class="btn btn-secondary" onclick="window.location.href='@Url.Action("SanPham", "SanPham")'" style="width: 185px;margin-left: 97px;">
+                                Quay lại trang trước
+                            </button>
+                        </div>
+                    }
+                </div>
+
+            </div>
+        </div>
+        <div class="info-container">
+            @Html.HiddenFor(model => model.MaSP)
+
+            <div class="form-group row">
+                @Html.LabelFor(model => model.MaNSX, "Mã Nhà Sản Xuất", new { @class = "col-md-4 col-form-label" })
+                <div class="col-md-8">
+                    @Html.EditorFor(model => model.MaNSX, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
+                    @Html.ValidationMessageFor(model => model.MaNSX, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="form-group row">
+                @Html.LabelFor(model => model.MaDanhMuc, " Danh Mục", new { @class = "col-md-4 col-form-label" })
+                <div class="col-md-8">
+                    <select id="MaDanhMuc" name="MaDanhMuc" class="form-control">
+                        <option value=""></option>
+                    </select>
+                    @Html.ValidationMessageFor(model => model.MaDanhMuc, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="form-group row">
+                @Html.LabelFor(model => model.MaCTDM, "Danh Mục Con", new { @class = "col-md-4 col-form-label" })
+                <div class="col-md-8">
+                    <select id="MaCTDM" name="MaCTDM" class="form-control">
+                        <option value="">Chọn Danh Mục Con</option>
+                    </select>
+                    @Html.ValidationMessageFor(model => model.MaCTDM, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            @*<div class="form-group row">
+                    @Html.LabelFor(model => model.MaDanhMuc, "Mã Danh Mục", new { @class = "col-md-4 col-form-label" })
+                    <div class="col-md-8">
+                        @Html.EditorFor(model => model.MaDanhMuc, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.MaDanhMuc, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    @Html.LabelFor(model => model.MaCTDM, "Mã Danh Mục Con", new { @class = "col-md-4 col-form-label" })
+                    <div class="col-md-8">
+                        @Html.EditorFor(model => model.MaCTDM, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.MaCTDM, "", new { @class = "text-danger" })
+                    </div>
+                </div>*@
+
+            <div class="form-group row">
+                @Html.LabelFor(model => model.TenSP, "Tên Sản Phẩm", new { @class = "col-md-4 col-form-label" })
+                <div class="col-md-8">
+                    @Html.EditorFor(model => model.TenSP, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.TenSP, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="form-group row">
+                @Html.LabelFor(model => model.GiaBan, "Giá Bán", new { @class = "col-md-4 col-form-label" })
+                <div class="col-md-8">
+                    @Html.EditorFor(model => model.GiaBan, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.GiaBan, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="form-group row">
+                @Html.LabelFor(model => model.GiaKM, "Giá Khuyến Mãi", new { @class = "col-md-4 col-form-label" })
+                <div class="col-md-8">
+                    @Html.EditorFor(model => model.GiaKM, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.GiaKM, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="form-group row">
+                @Html.LabelFor(model => model.GiaNhap, "Giá Nhập", new { @class = "col-md-4 col-form-label" })
+                <div class="col-md-8">
+                    @Html.EditorFor(model => model.GiaNhap, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.GiaNhap, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="form-group row">
+                @Html.LabelFor(model => chiTietSP.ThanhPhan, "Thành Phần", new { @class = "col-md-4 col-form-label" })
+                <div class="col-md-8">
+                    @Html.EditorFor(model => chiTietSP.ThanhPhan, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => chiTietSP.ThanhPhan, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="form-group row">
+                @Html.LabelFor(model => chiTietSP.TrangThai, "Trạng Thái", new { @class = "col-md-4 col-form-label" })
+                <div class="col-md-8">
+                    <!-- Sử dụng EditorFor nhưng chỉ cho phép xem mà không thể chỉnh sửa -->
+                    @Html.EditorFor(model => chiTietSP.TrangThai, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
+                    @Html.ValidationMessageFor(model => chiTietSP.TrangThai, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+
+            <div class="form-group row">
+                @Html.LabelFor(model => chiTietSP.CongDung, "Công Dụng", new { @class = "col-md-4 col-form-label" })
+                <div class="col-md-8">
+                    @Html.EditorFor(model => chiTietSP.CongDung, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => chiTietSP.CongDung, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="form-group row">
+                @Html.LabelFor(model => chiTietSP.DVT, "Đơn Vị Tính", new { @class = "col-md-4 col-form-label" })
+                <div class="col-md-8">
+                    @Html.EditorFor(model => chiTietSP.DVT, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => chiTietSP.DVT, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="form-group row">
+                @Html.LabelFor(model => chiTietSP.SoLuongTon, "Số Lượng Tồn", new { @class = "col-md-4 col-form-label" })
+                <div class="col-md-8">
+                    @Html.EditorFor(model => chiTietSP.SoLuongTon, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => chiTietSP.SoLuongTon, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="form-group row">
+                @Html.LabelFor(model => chiTietSP.NSX, "Ngày Sản Xuất", new { @class = "col-md-4 col-form-label" })
+                <div class="col-md-8">
+                    @Html.EditorFor(model => chiTietSP.NSX, new { htmlAttributes = new { @class = "form-control", @type = "text", @placeholder = "dd/mm/yyyy" , @readonly = "readonly" } })
+                    @Html.ValidationMessageFor(model => chiTietSP.NSX, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="form-group row">
+                @Html.LabelFor(model => chiTietSP.HSD, "Hạn Sử Dụng", new { @class = "col-md-4 col-form-label" })
+                <div class="col-md-8">
+                    @Html.EditorFor(model => chiTietSP.HSD, new { htmlAttributes = new { @class = "form-control", @type = "text", @placeholder = "dd/mm/yyyy" , @readonly = "readonly" } })
+                    @Html.ValidationMessageFor(model => chiTietSP.HSD, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+
+
+        </div>
+    </div>}
+
+
+@section Scripts {
+    <script type="text/javascript">
+        document.addEventListener('DOMContentLoaded', function () {
+    // Lấy danh sách Mã Danh Mục khi trang được tải
+    fetch('/api/danhmucsp') // Đảm bảo endpoint này đúng
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`Lỗi ${response.status}: ${response.statusText}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            const selectMaDanhMuc = document.getElementById('MaDanhMuc');
+            selectMaDanhMuc.innerHTML = '<option value="">Chọn Mã Danh Mục</option>';  // Hiển thị mã danh mục mặc định
+
+            if (Array.isArray(data) && data.length > 0) {
+                data.forEach(item => {
+                    selectMaDanhMuc.innerHTML += `<option value="${item.MaDanhMuc}" ${item.MaDanhMuc == '@Model.MaDanhMuc' ? 'selected' : ''}>${item.TenDanhMuc}</option>`;
+                });
+
+                // Sau khi tải danh mục, gọi API lấy các chi tiết danh mục con ngay lập tức
+                loadMaCTDM('@Model.MaDanhMuc');
+            } else {
+                console.error("Dữ liệu Mã Danh Mục không hợp lệ hoặc rỗng");
+            }
+        })
+        .catch(error => {
+            console.error("Lỗi khi tải dữ liệu Mã Danh Mục: ", error);
+        });
+
+    // Hàm lấy danh sách MaCTDM ngay khi trang tải
+    function loadMaCTDM(maDanhMuc) {
+        if (maDanhMuc) {
+            const selectMaCTDM = document.getElementById('MaCTDM');
+            selectMaCTDM.innerHTML = '<option value="">Chọn Danh Mục Con</option>'; // Reset dropdown
+
+            fetch(`/api/ctdanhmuc/${maDanhMuc}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`Lỗi ${response.status}: ${response.statusText}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (Array.isArray(data) && data.length > 0) {
+                        data.forEach(item => {
+                            // Chọn mặc định option dựa trên @Model.MaCTDM
+                            selectMaCTDM.innerHTML += `<option value="${item.MaCTDM}" ${item.MaCTDM == '@Model.MaCTDM' ? 'selected' : ''}>${item.TenCTDM}</option>`;
+                        });
+                    } else {
+                        console.error("Dữ liệu Mã Chi Tiết Danh Mục không hợp lệ hoặc rỗng");
+                        selectMaCTDM.innerHTML += '<option value="">Không có dữ liệu</option>';
+                    }
+                })
+                .catch(error => {
+                    console.error("Lỗi khi tải dữ liệu Mã Chi Tiết Danh Mục: ", error);
+                    selectMaCTDM.innerHTML += '<option value="">Lỗi khi tải dữ liệu</option>';
+                });
+        }
+    }
+});
+
+
+    </script>
+}

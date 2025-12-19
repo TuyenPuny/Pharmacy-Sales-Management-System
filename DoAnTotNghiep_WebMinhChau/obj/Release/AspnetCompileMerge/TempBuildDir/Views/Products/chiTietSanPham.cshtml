@@ -1,0 +1,281 @@
+﻿
+@model DoAnTotNghiep_WebMinhChau.Models.SanPham_CTSP
+@{
+    ViewBag.Title = "ChiTietSanPham";
+    Layout = "~/Views/Shared/_LayoutGeneral.cshtml";
+}
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chi tiết sản phẩm</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+
+    <style>
+        .product-status {
+            margin-top: 20px;
+            font-size: 20px;
+        }
+
+        .status-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px; /* Khoảng cách giữa các dòng */
+            color: #333; /* Màu chữ */
+        }
+
+            .status-item i {
+                color: #28a745;
+                margin-right: 8px;
+            }
+
+        .price {
+            font-size: 24px;
+            font-weight: bold;
+            color: #2ab2f7;
+        }
+
+            .price del {
+                color: #999;
+                font-size: 18px;
+            }
+        /*Cập nhật số lượng*/
+
+        .quantity-control {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+            .quantity-control button {
+                background-color: #cfefff;
+                border: none;
+                padding: 0;
+                cursor: pointer;
+                font-weight: bold;
+                transition: background-color 0.2s ease;
+                height: 40px;
+                width: 120px;
+            }
+
+            .quantity-control .decrease {
+                background-color: #cfefff;
+                border-top-left-radius: 20px;
+                border-bottom-left-radius: 20px;
+                width: 40px;
+                padding: 0;
+            }
+
+            .quantity-control .increase {
+                background-color: #cfefff;
+                border-top-right-radius: 20px;
+                border-bottom-right-radius: 20px;
+                width: 40px;
+                padding: 0;
+            }
+
+            .quantity-control button:hover {
+                background-color: #84cff5;
+                box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+            }
+
+            .quantity-control .quantity {
+                font-weight: bold;
+                padding: 0 10px;
+                text-align: center;
+                width: 30px;
+            }
+        /*Hình ảnh*/
+        .image-container {
+            overflow: hidden;
+            position: relative;
+        }
+
+        #product-image {
+            width: 100%;
+            height: auto;
+            transition: transform 0.5s ease;
+        }
+
+        .image-container:hover #product-image {
+            transform: scale(1.1); /* Phóng to hình ảnh lên 1.2 lần */
+        }
+        /*button*/
+        .bntADD {
+            border-radius: 5px 20px;
+            border: 3px solid #95c0fc;
+            font-size: 18px;
+            margin-right: 20px;
+        }
+
+            .bntADD:hover {
+                background-color: white;
+                color: blue;
+            }
+    </style>
+</head>
+<body>
+
+    <div class="container" style="padding-top:50px">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="image-container">
+                    <img src="@Url.Content("~/Assets/Image/" + Model.SanPham.HinhAnh)" alt="Hình ảnh sản phẩm" class="img-fluid" id="product-image">
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <h2>@Model.SanPham.TenSP</h2>
+                <p class="price">
+                    @if (Model.SanPham.GiaKM.HasValue)
+                    {
+                        <del>Giá gốc: @String.Format("{0:N0} VND", Model.SanPham.GiaBan)</del>
+                        <span>Chỉ còn: @String.Format("{0:N0} VND", Model.SanPham.GiaKM)</span>
+
+                    }
+                    else if (Model.ChiTietSanPham.TrangThai == "Ngừng kinh doanh")
+                    {
+                        <span class="ngung-kinh-doanh" style="color:red">Ngừng kinh doanh</span>
+                    }
+                    else
+                    {
+                        <span> Giá: @String.Format("{0:N0} VND", Model.SanPham.GiaBan) </span>
+                    }
+                </p>
+                <div class="product-status">
+                    <div class="status-item">
+                        <i class="fas fa-boxes"></i> Số lượng tồn: @Model.ChiTietSanPham.SoLuongTon
+                    </div>
+                    <div class="status-item">
+                        <i class="fas fa-balance-scale"></i> Đơn vị tính: @Model.ChiTietSanPham.DVT
+                    </div>
+                    <div class="status-item">
+                        <i class="fas fa-check-circle"></i> Trạng thái: @Model.ChiTietSanPham.TrangThai
+                    </div>
+                </div>
+                <div class="quantity-control" style="font-size:18px">
+                    <span>Chọn số lượng</span>
+                    <button class="decrease" style="border-left:20px">-</button>
+                    <span class="quantity">1</span>
+                    <button class="increase">+</button>
+                </div>
+                @* JS số lượng  *@
+                <script>
+                    const decreaseButton = document.querySelector('.decrease');
+                    const increaseButton = document.querySelector('.increase');
+                    const quantityDisplay
+                        = document.querySelector('.quantity');
+                    let quantity = 1;
+
+                    decreaseButton.addEventListener('click', () => {
+                        if (quantity > 1) {
+                            quantity--;
+                            quantityDisplay.textContent = quantity;
+                        }
+                    });
+
+                    increaseButton.addEventListener('click', () => {
+                        quantity++;
+                        quantityDisplay.textContent = quantity;
+                    });
+                </script><br />
+                         <a class="cart" href="#">
+                             @if (Model.ChiTietSanPham.TrangThai == "Ngừng kinh doanh")
+                             {
+                                 <span class="add-to-cart btn btn-primary bntADD disabled" data-id="@Model.SanPham.MaSP" data-quantity="1" onclick="addToCart(this)">
+                                     <i class="fas fa-shopping-cart icon-white"></i>
+                                     <span class="txt" style="pointer-events: none; opacity: 0.5;">Thêm vào giỏ hàng</span>
+                                 </span>
+                             }
+                             else
+                             {
+                                 <span class="add-to-cart btn btn-primary bntADD" data-id="@Model.SanPham.MaSP" data-quantity="1" onclick="addToCart(this)">
+                                     <i class="fas fa-shopping-cart icon-white"></i>
+                                     <span class="txt">Thêm vào giỏ hàng</span>
+                                 </span>
+                             }
+
+                         </a>
+
+
+
+            </div>
+        </div>
+        <table class="table table-bordered mt-3">
+            <tbody>
+                <tr>
+                    <th>Thành phần:</th>
+                    <td>
+                        <ul>
+                            @foreach (var item in Model.ChiTietSanPham.ThanhPhan.Split('.'))
+                            {
+                                <li>@item.Trim()</li>
+                            }
+                        </ul>
+                    </td>
+                </tr>
+                <tr>
+                    <th>Công dụng:</th>
+                    <td>@Model.ChiTietSanPham.CongDung</td>
+                </tr>
+                <tr>
+                    <th>Cách dùng:</th>
+                    <td>@Model.ChiTietSanPham.CachDung</td>
+                </tr>
+
+                <tr>
+                    <th>Hạn sử dụng:</th>
+                    <td>
+                        @(Model.ChiTietSanPham.HSD.HasValue ? Model.ChiTietSanPham.HSD.Value.ToString("dd/MM/yyyy") : "Không có")
+                    </td>
+                </tr>
+
+            </tbody>
+        </table>
+    </div>
+
+
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+<script type="text/javascript">
+    function addToCart(element) {
+    event.preventDefault();
+    var productId = $(element).data('id');
+    var quantity = parseInt(quantityDisplay.textContent);
+
+    console.log(productId, quantity); // Kiểm tra giá trị
+
+    $.ajax({
+        url: '@Url.Action("AddItem", "Cart")', // Đảm bảo đường dẫn chính xác
+        type: 'POST',
+        data: {
+            productId: productId,
+            quantity: quantity
+        },
+        success: function (response) {
+            if (response.success) {
+                alert('Sản phẩm đã được thêm vào giỏ hàng!');
+            } else {
+                alert(response.message);
+            }
+        },
+        error: function (xhr, status, error) {
+            console.log(xhr.responseText); // In ra lỗi chi tiết
+            alert('Có lỗi xảy ra khi gửi yêu cầu.');
+        }
+    });
+}
+
+</script>

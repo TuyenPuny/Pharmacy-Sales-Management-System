@@ -1,0 +1,213 @@
+﻿@using DoAnTotNghiep_WebMinhChau.Models
+@{
+    ViewBag.Title = "ThanhToan";
+    Layout = "~/Views/Shared/_LayoutGeneral.cshtml";
+}
+
+<style>
+    body {
+        background-color: #f4f4f9;
+    }
+
+    .invoice {
+        background-color: #fff;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        width: calc(100% - 200px); /* Thụt vào 100px từ mỗi bên */
+        margin: 0 auto; /* Căn giữa hóa đơn */
+        padding: 20px;
+        max-width: 800px; /* Đảm bảo không quá rộng */
+    }
+
+
+        .invoice h2, .invoice h3 {
+            font-size: 26px;
+            color: #5D4037;
+        }
+
+    /* Phần Thông Tin Hóa Đơn */
+    .invoice-info {
+        background-color: #f9f9f9;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        padding: 20px;
+    }
+
+        .invoice-info .row {
+            margin-bottom: 10px;
+        }
+
+        .invoice-info .col-md-6 {
+            font-size: 18px;
+        }
+
+        .invoice-info strong {
+            color: #5D4037;
+        }
+
+    /* Cải thiện bảng chi tiết */
+    .invoice-details .table {
+        margin-top: 20px;
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .table th, .table td {
+        padding: 12px;
+        text-align: center;
+        font-size: 16px;
+    }
+
+    .table th {
+        background-color: #607D8B;
+        color: white;
+    }
+
+    .total {
+        font-size: 18px;
+        font-weight: bold;
+        color: #388E3C;
+    }
+
+    .btn-success {
+        font-size: 18px;
+        padding: 10px 20px;
+    }
+
+    .btn-primary {
+        font-size: 18px;
+        padding: 10px 20px;
+    }
+
+    .invoice-info .row div, .invoice-details .row div {
+        padding: 10px;
+    }
+
+    .row.justify-content-center {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        min-height: 100vh; /* Chiều cao 100% màn hình */
+        text-align: center; /* Căn giữa chữ */
+    }
+
+    /* Căn giữa nội dung trong class "total" */
+    .total {
+        text-align: end;
+    }
+
+    /* Đoạn thông báo nằm ở cuối */
+    .notice {
+        margin-top: auto; /* Đẩy phần này xuống cuối */
+        text-align: center;
+        padding: 10px;
+        background-color: #f8f9fa; /* Màu nền nhạt để làm nổi bật */
+    }
+</style>
+
+<div class="container text-center">
+    <h2>Đặt Hàng Thành Công!</h2>
+    <p>Vui lòng chờ đơn hàng được xác nhận và giao hàng.</p>
+    <a href="@Url.Action("Index", "Home")" class="btn btn-primary">Trở Về Trang Chủ</a>
+</div>
+<!-- Nút Xuất Hóa Đơn -->
+<div class="container text-center">
+    <button class="btn btn-success" id="btnShowInvoice" style="width: 176px; margin-top: 15px; margin-bottom: 15px;">Xuất Hóa Đơn</button>
+</div>
+<!-- Phần Hóa Đơn Ẩn Ban Đầu -->
+<div class="container" id="invoiceSection" style="display:none;">
+    <div class="invoice border p-4 shadow-lg">
+        <!-- Thông Tin Hóa Đơn -->
+        <div>
+            <div class="row mb-2 justify-content-center">
+                <div class="text-center">
+                    <h2 class="text-center mb-4">NHÀ THUỐC MINH CHÂU</h2>
+                    @if (@ViewBag.HoaDon.HinhThucNhanHanh == "Nhận Hàng Tại Quầy Thuốc")
+                    {
+                        <div class="mb-2"><strong>Địa Chỉ:</strong> @ViewBag.HoaDon.DiaChiNhanHang</div>
+                    }
+                    else
+                    {
+                        <div class="mb-2"><strong>Địa Chỉ:</strong> @ViewBag.HoaDon.DiaChiNhanHang - @ViewBag.HoaDon.PhuongXa - @ViewBag.HoaDon.QuanHuyen - @ViewBag.HoaDon.TinhThanh</div>
+                    }
+                    <div class="mb-2"><strong>Hình Thức Nhận Hàng:</strong> @ViewBag.HoaDon.HinhThucNhanHanh</div>
+                    <div class="mb-2"><strong>Số Điện Thoại:</strong> 0365550000</div>
+                </div>
+            </div>
+        </div>
+        <h3 class="text-center mb-4">Hóa đơn bán hàng</h3>
+        <div class="invoice-info p-4 mb-4 shadow-sm border">
+            <div class="row mb-2">
+                <div class="col-md-6"><strong>Mã Hóa Đơn:</strong> @ViewBag.HoaDon.MaHD</div>
+                <div class="col-md-6"><strong>Ngày Lập:</strong> @((DateTime)ViewBag.HoaDon.ThoiGian)</div>
+                <div class="col-md-6"><strong>Họ Tên:</strong> @ViewBag.HoaDon.HoTen</div>
+                <div class="col-md-6"><strong>Số Điện Thoại:</strong> @ViewBag.HoaDon.SDT</div>
+                <div class="col-md-6"><strong>Phương Thức Thanh Toán:</strong> @ViewBag.HoaDon.PTTT</div>
+            </div>
+        </div>
+
+        <!-- Bảng Chi Tiết -->
+        <div class="invoice-details p-4 border shadow-sm">
+            <table class="table table-bordered table-striped">
+                <thead class="thead-dark">
+                    <tr>
+                        <th>STT</th>
+                        <th>Tên Sản Phẩm</th>
+                        <th>Số Lượng</th>
+                        <th>Đơn Giá</th>
+                        <th>Thành Tiền</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @{
+                        int index = 1;
+                        foreach (var item in ViewBag.ChiTietHoaDon as List<CTHoaDonDTO>)
+                        {
+                            <tr>
+                                <td>@index</td>
+                                <td>@item.TenSP</td>
+                                <td>@item.SoLuong</td>
+                                <td>@item.DonGia.ToString("#,0") VNĐ</td>
+                                <td>@item.ThanhTien.ToString("#,0") VNĐ</td>
+                            </tr>
+                            index++;
+                        }
+                    }
+                </tbody>
+            </table>
+
+        </div>
+        <div class="total mt-4 text-end">
+            <h4><strong>Tổng Tiền:</strong> @ViewBag.HoaDon.TongTien.ToString("#,0") VNĐ</h4>
+        </div>
+        <div class="notice text-center mt-auto">
+            <p>LƯU Ý: Quý khách vui lòng kiểm tra tiền và sản phẩm trước khi nhận hàng</p>
+            <p>Cảm ơn và hẹn gặp lại!</p>
+        </div>
+
+    </div>
+</div>
+
+
+<script>
+    // Khi người dùng nhấn nút Xuất Hóa Đơn
+    document.getElementById("btnShowInvoice").onclick = function () {
+        // Hiển thị phần hóa đơn
+        document.getElementById("invoiceSection").style.display = "block";
+
+        // Chỉ in nội dung trong div.invoice
+        var printContent = document.querySelector('.invoice').innerHTML;
+        var originalContent = document.body.innerHTML;
+
+        // Đưa nội dung cần in vào body
+        document.body.innerHTML = printContent;
+
+        // In và khôi phục nội dung ban đầu
+        window.print();
+        document.body.innerHTML = originalContent;
+
+        // Ẩn lại phần hóa đơn sau khi in
+        document.getElementById("invoiceSection").style.display = "none";
+    };
+</script>

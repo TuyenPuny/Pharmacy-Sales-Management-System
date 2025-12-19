@@ -1,0 +1,218 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            background-color: #f4f7fa; /* Light background color */
+        }
+
+        #sidebar-wrapper {
+            min-height: 100vh;
+            background-color: #28a745; /* Green background for sidebar */
+            color: white;
+            transition: all 0.3s ease;
+            font-size: 18px;
+        }
+
+            #sidebar-wrapper .list-group-item {
+                background: transparent;
+                color: white;
+                transition: background 0.3s, color 0.3s;
+            }
+
+                #sidebar-wrapper .list-group-item:hover {
+                    background: rgba(255, 255, 255, 0.2);
+                    color: #fff; /* Keep text white on hover */
+                }
+
+        #page-content-wrapper {
+            width: 100%;
+            padding: 20px; /* Padding for content */
+        }
+
+        .welcome-message {
+            margin-top: 20px;
+            font-size: 1.5rem;
+            color: #333;
+            font-weight: bold; /* Bold text for better readability */
+        }
+
+        .btn-primary {
+            background-color: #218838; /* Dark green color */
+            border-color: #218838;
+            transition: background-color 0.3s, border-color 0.3s; /* Transition for button color */
+        }
+
+            .btn-primary:hover {
+                background-color: #1e7e34;
+                border-color: #1c7430;
+            }
+
+        .card {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-header {
+            background-color: #e2f7e2; /* Light green header */
+            color: #155724;
+            font-weight: bold;
+        }
+
+        h2 {
+            color: #28a745; /* Green for headings */
+        }
+
+        .list-group-item i {
+            margin-right: 10px;
+            transition: color 0.3s; /* Transition for icon color */
+        }
+
+        #sidebar-wrapper .list-group-item:hover i {
+            color: #fff; /* Change icon color on hover */
+        }
+
+        .navbar {
+            background-color: #ffffff;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+            .navbar .nav-link {
+                color: #28a745; /* Green color for nav links */
+            }
+
+                .navbar .nav-link:hover {
+                    color: #1e7e34; /* Darker green on hover */
+                }
+
+        /* Custom toggle button style */
+        #menu-toggle {
+            background-color: #28a745;
+            border: none;
+            color: white;
+        }
+
+            #menu-toggle:hover {
+                background-color: #1e7e34; /* Darker green on hover */
+            }
+    </style>
+</head>
+<body>
+    @RenderSection("Scripts", required: false)
+    <div class="d-flex" id="wrapper">
+        <div id="sidebar-wrapper">
+            <div class="sidebar-heading text-center">
+                <a href="#">
+                    <img src="~/Assets/Image/logo.png" alt="Logo" style="height: 60px;">
+                </a>
+            </div>
+            <div class="list-group list-group-flush">
+                @if (Session["Role"] == "ADMIN")
+                {
+                    <a href="@Url.Action("SanPham", "SanPham")" class="list-group-item list-group-item-action" data-title="Quản lý sản phẩm"><i class="fas fa-box"></i>Quản lý sản phẩm</a>
+                    <a href="@Url.Action("Index", "DanhMuc")" class="list-group-item list-group-item-action" data-title="Quản lý danh mục sản phẩm"><i class="fas fa-tags"></i>Quản lý danh mục sản phẩm</a>
+                    <a href="@Url.Action("KhachHang", "KhachHang")" class="list-group-item list-group-item-action" data-title="Quản lý người dùng"><i class="fas fa-users"></i>Quản lý khách hàng</a>
+                    <a href="@Url.Action("NhanVien", "NhanVient")" class="list-group-item list-group-item-action" data-title="Quản lý nhân viên"><i class="fas fa-user-tie"></i>Quản lý nhân viên</a>
+                    <a href="@Url.Action("NhaCungCap", "NhaCungCap")" class="list-group-item list-group-item-action" data-title="Quản lý nhà cung cấp"><i class="fas fa-industry"></i>Quản lý nhà cung cấp</a>
+                    <a href="@Url.Action("NhaSanXuat", "NhaSanXuat")" class="list-group-item list-group-item-action" data-title="Quản lý nhà sản xuất"><i class="fas fa-building"></i>Quản lý nhà sản xuất</a>
+                    <a href="@Url.Action("DonHang", "DonHang")" class="list-group-item list-group-item-action" data-title="Quản lý đơn hàng"><i class="fas fa-shopping-cart"></i>Quản lý đơn hàng</a>
+                    <a href="@Url.Action("QLPhieuThu", "PhieuThu")" class="list-group-item list-group-item-action" data-title="Quản lý phiếu thu"><i class="fas fa-user-circle"></i>Quản lý phiếu thu</a>
+                    <a href="@Url.Action("taikhoan", "TaiKhoan")" class="list-group-item list-group-item-action" data-title="Quản lý tài khoản"><i class="fas fa-user-circle"></i>Quản lý tài khoản</a>
+                    <a href="@Url.Action("Index", "BaoCao_ThongKe")" class="list-group-item list-group-item-action" data-title="Thống kê doanh thu"><i class="fas fa-chart-line"></i>Thống kê doanh thu</a>
+                    <a href="@Url.Action("Index", "Backup")" class="list-group-item list-group-item-action" data-title="Sao lưu phục hồi"><i class="fas fa-chart-line"></i>Sao lưu phục hồi</a>
+                }
+                else
+                {
+                    <a href="@Url.Action("SanPham", "SanPham")" class="list-group-item list-group-item-action" data-title="Quản lý sản phẩm"><i class="fas fa-box"></i>Quản lý sản phẩm</a>
+                    <a href="@Url.Action("Index", "DanhMuc")" class="list-group-item list-group-item-action" data-title="Quản lý danh mục sản phẩm"><i class="fas fa-tags"></i>Quản lý danh mục sản phẩm</a>
+                    <a href="@Url.Action("NhaCungCap", "NhaCungCap")" class="list-group-item list-group-item-action" data-title="Quản lý nhà cung cấp"><i class="fas fa-industry"></i>Quản lý nhà cung cấp</a>
+                    <a href="@Url.Action("NhaSanXuat", "NhaSanXuat")" class="list-group-item list-group-item-action" data-title="Quản lý nhà sản xuất"><i class="fas fa-building"></i>Quản lý nhà sản xuất</a>
+                    <a href="@Url.Action("DonHang", "DonHang")" class="list-group-item list-group-item-action" data-title="Quản lý đơn hàng"><i class="fas fa-shopping-cart"></i>Quản lý đơn hàng</a>
+                    <a href="@Url.Action("Index", "BaoCao_ThongKe")" class="list-group-item list-group-item-action" data-title="Thống kê doanh thu"><i class="fas fa-chart-line"></i>Thống kê doanh thu</a>
+                }
+
+            </div>
+
+        </div>
+
+        <div id="page-content-wrapper">
+            <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom">
+                <span class="navbar-brand" id="selected-title"></span>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav ml-auto">
+                        <form action="/Users/Logout" id="frmlogout" method="post" style="margin: 0;">
+
+                            <a href="@Url.Action("ExportToExcel", "BaoCao_ThongKe", new { Area = "Admin", startDate = ViewBag.StartDate, endDate = ViewBag.EndDate })" class="btn btn-primary">Xuất Excel</a>
+
+                            <button type="submit" class="nav-link btn btn-link" style="color: inherit; text-decoration: none;">
+                                <i class="fas fa-sign-out-alt"></i> Đăng xuất
+                            </button>
+                        </form>
+                    </ul>
+                </div>
+                @if (TempData["ExportMessage"] != null)
+                {
+                    <div class="alert alert-success">
+                        @TempData["ExportMessage"]
+                    </div>
+                }
+
+
+            </nav>
+
+            <div class="container-fluid">
+                @RenderBody()
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $("#menu-toggle").click(function (e) {
+                e.preventDefault();
+                $("#wrapper").toggleClass("toggled");
+            });
+
+            // Kiểm tra và hiển thị tiêu đề từ sessionStorage khi tải trang
+            if (sessionStorage.getItem("selectedTitle")) {
+                $("#selected-title").text(sessionStorage.getItem("selectedTitle"));
+            }
+
+            // Cập nhật tiêu đề và điều hướng khi một mục trong danh sách được nhấp
+            $(".list-group-item-action").click(function (e) {
+                var title = $(this).data("title");
+                $("#selected-title").text(title);
+                sessionStorage.setItem("selectedTitle", title); // Lưu tiêu đề vào sessionStorage
+
+                // Nếu có href hợp lệ, cho phép điều hướng
+                var href = $(this).attr("href");
+                if (href !== "#") {
+                    // Ngăn chặn hành động mặc định trước khi điều hướng
+                    e.preventDefault();
+                    setTimeout(function () {
+                        window.location.href = href;  // Điều hướng đến href
+                    }, 100);  // Thời gian chờ để cho tiêu đề kịp hiển thị
+                } else {
+                    // Ngăn chặn hành động mặc định nếu liên kết không có href cụ thể
+                    e.preventDefault();
+                }
+            });
+        });
+    </script>
+
+
+
+</body>
+
+</html>

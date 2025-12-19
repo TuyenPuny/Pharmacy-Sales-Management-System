@@ -1,0 +1,188 @@
+﻿@model IEnumerable<DoAnTotNghiep_WebMinhChau.Areas.Admin.Models.SanPham>
+
+@{
+    ViewBag.Title = "SanPham";
+    Layout = "~/Areas/Admin/Views/Shared/LayoutADMIN.cshtml";
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
+
+}
+<script>
+    function confirmDelete(id) {
+        if (confirm("Bạn có chắc chắn muốn xóa sản phẩm này không?")) {
+            fetch(`/Admin/SanPham/Delete?MaSP=${id}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Kết nối mạng không ổn định');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    alert(data.message); // Show success or error message from server
+                    location.reload(); // Reload the page to see the changes
+                })
+                .catch(error => {
+                    alert("Có lỗi xảy ra khi xóa sản phẩm: " + error.message);
+                });
+        }
+    }
+</script>
+
+
+<style>
+    .search-container {
+        display: flex;
+        align-items: center;
+        max-width: 800px;
+        margin: 20px auto;
+    }
+
+        .search-container input {
+            flex: 1;
+            padding: 8px 12px;
+            border-radius: 20px 0 0 20px;
+            border: 1px solid #ccc;
+            border-right: none;
+        }
+
+        .search-container button {
+            padding: 8px 16px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 0 20px 20px 0;
+            cursor: pointer;
+        }
+
+    .actions {
+        display: flex;
+        align-items: center;
+        margin-left: 20px;
+    }
+
+        .actions .create-new {
+            background-color: #28a745;
+            color: #fff;
+            border: none;
+            border-radius: 20px;
+            padding: 6px 12px;
+            margin-right: 10px;
+            cursor: pointer;
+        }
+
+        .actions .count {
+            background-color: #f8f9fa;
+            border: 1px solid #ced4da;
+            border-radius: 20px;
+            padding: 6px 12px;
+        }
+</style>
+
+<p></p>
+
+<div id="notification" class="alert alert-dismissible fade show" style="display:none;" role="alert">
+    <span id="notification-message"></span>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card text-center">
+            <a class="card-header bg-light" href="@Url.Action("SanPham", "SanPham", new { searchTerm = "" })">Tất cả sản phẩm </a>
+            <div class="card-body">
+                <h5 class="card-title">@ViewBag.slSP</h5>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-center">
+            <a class="card-header bg-light" href="@Url.Action("SanPham", "SanPham", new { searchTerm = "Sản phẩm đang khuyến mãi" })">Sản phẩm đang khuyến mãi</a>
+            <div class="card-body">
+                <h5 class="card-title">@ViewBag.spKM</h5>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-center">
+            <a class="card-header bg-light" href="@Url.Action("SanPham", "SanPham", new { searchTerm = "Sản phẩm sắp hết hạn" })">Sản phẩm sắp hết hạn</a>
+            <div class="card-body">
+                <h5 class="card-title">@ViewBag.spSHH</h5>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-center">
+            <a class="card-header bg-light" href="@Url.Action("SanPham", "SanPham", new { searchTerm = "Sản phẩm gần hết" })">Sản phẩm gần hết</a>
+            <div class="card-body">
+                <h5 class="card-title">@ViewBag.spGH</h5>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Form tìm kiếm -->
+<form class="search-container" method="get" action="@Url.Action("SanPham", "SanPham")">
+    <input type="text" name="searchTerm" value="@Request.QueryString["searchTerm"]" placeholder="Tìm kiếm theo tên sản phẩm" />
+    <button type="submit">Tìm</button>
+    <div class="actions">
+        @if (Session["Role"] == "ADMIN")
+        {
+            <div class="count">@Html.ActionLink("Thêm sản phẩm mới", "Create")</div>
+        }
+    </div>
+</form>
+
+<table class="table">
+    <tr>
+        <td></td>
+        <th width="400px">Tên sản phẩm</th>
+        <th>Giá bán</th>
+        <th>Giá khuyến mãi</th>
+        <th>Giá nhập</th>
+        <th></th>
+    </tr>
+
+    @{
+        if (Model == null || !Model.Any())
+        {
+            <tr>
+                <td colspan="6" style="text-align:center;">Không có sản phẩm nào</td>
+            </tr>
+        }
+        else
+        {
+            foreach (var item in Model)
+            {
+                bool isStopped = item.ChiTietSP != null && item.ChiTietSP.Any(ct => ct.TrangThai == "Ngừng kinh doanh");
+
+                <tr>
+                    <td>
+                        <img src="@Url.Content("~/Assets/Image/" + item.HinhAnh)" alt="Product Image" style="width: 100px; height: auto;" />
+                    </td>
+                    <td>
+                        @item.TenSP
+                        @if (isStopped)
+                        {
+                            <span style="color: red;">(Ngừng kinh doanh)</span>
+                        }
+                    </td>
+                    <td>@String.Format("{0:N0}", item.GiaBan) VNĐ</td>
+                    <td> @(item.GiaKM != null ? String.Format("{0:N0} VNĐ", item.GiaKM) : "")</td>
+                    <td>@String.Format("{0:N0}", item.GiaNhap) VNĐ</td>
+
+                    <td>
+                        <a href="@Url.Action("Edit", new { MaSP = item.MaSP })" class="btn btn-outline-primary btn-sm" title="Xem và chỉnh sửa">
+                            <i class="bi bi-pencil-square"></i>
+                        </a>
+                        <button class="btn btn-outline-danger btn-sm" onclick="confirmDelete('@item.MaSP')"><i class="bi bi-trash"></i></button>
+                    </td>
+                </tr>
+            }
+        }
+    }
+</table>

@@ -1,0 +1,441 @@
+﻿@model List<DoAnTotNghiep_WebMinhChau.Models.CartItem>
+@using DoAnTotNghiep_WebMinhChau.Models
+
+@{
+
+    ViewBag.Title = "Gio hang";
+    Layout = "~/Views/Shared/_LayoutGeneral.cshtml";
+}
+
+<style>
+    .cart-container {
+        display: flex;
+        justify-content: space-between;
+        margin: 20px auto; /* Căn giữa hai bên */
+        width: 110%; /* Chiều rộng tối đa của giỏ hàng */
+        max-width: 1400px; /* Đảm bảo không vượt quá 1200px */
+    }
+
+    .cart-items {
+        width: 65%;
+    }
+
+    .cart-summary {
+        width: 30%; /* Để nguyên chiều rộng như bạn đang dùng */
+        height: 300px; /* Chiều cao cố định */
+        padding: 20px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        background-color: #f9f9f9;
+        text-align: center;
+        overflow: auto; /* Đảm bảo nội dung không bị tràn ra ngoài */
+    }
+
+
+        .cart-summary h3 {
+            margin-bottom: 20px;
+        }
+
+    .card-text {
+        text-align: start;
+    }
+
+    .text-end {
+        text-align: end; /* Căn phải cho kết quả */
+    }
+
+
+    /* General table styling */
+    .table {
+        width: 100%;
+        border-collapse: collapse;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        margin-top: 20px;
+        background-color: #f9f9f9;
+        border-radius: 8px;
+        overflow: hidden;
+    }
+
+        .table th {
+            padding: 10px;
+            background-color: #007bff;
+            color: #fff;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .table td {
+            text-align: center;
+            border-bottom: 1px solid #ddd;
+            font-size: 18px;
+        }
+
+    .product-image {
+        width: 80px;
+        height: 80px;
+        object-fit: cover;
+        border-radius: 5px;
+        transition: transform 0.3s ease;
+    }
+
+        .product-image:hover {
+            transform: scale(1.1);
+        }
+
+    .txtQuantity {
+        width: 50px;
+        text-align: center;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        padding: 5px;
+    }
+
+    .btn_cart-delete {
+        color: #dc3545;
+        font-weight: bold;
+        text-decoration: none;
+        transition: color 0.2s ease;
+    }
+
+        .btn_cart-delete:hover {
+            color: #c82333;
+        }
+
+    .cart-buttons {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 30px;
+        padding: 10px 0;
+    }
+
+    .btn_cart {
+        padding: 12px 25px;
+        background-color: #007bff;
+        color: #fff;
+        border: none;
+        border-radius: 5px;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: background-color 0.3s ease, transform 0.2s ease;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+        .btn_cart:hover {
+            background-color: #0056b3;
+            transform: translateY(-2px);
+        }
+
+        .btn_cart:active {
+            background-color: #004494;
+            transform: scale(0.98);
+        }
+    /*btn xóa từng sản phẩm*/
+    .btn-delete {
+        display: inline-block;
+        padding: 10px 10px;
+        background-color: #dc3545;
+        color: #fff;
+        text-decoration: none;
+        font-weight: bold;
+        border-radius: 5px;
+        transition: background-color 0.3s ease, transform 0.2s ease;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+        .btn-delete:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn-delete:active {
+            transform: scale(0.98);
+        }
+
+    /*thông báo*/
+    .alert-custom {
+        font-size: 1.2rem;
+        padding: 20px;
+        background-color: #ffcccb;
+        color: #a94442;
+        border: 2px solid #e74c3c;
+        border-radius: 8px;
+        box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease;
+    }
+
+        .alert-custom:hover {
+            transform: scale(1.05);
+        }
+
+    .btn-continue {
+        font-size: 1.1rem;
+        padding: 12px 20px;
+        background-image: linear-gradient(45deg, #3498db, #2980b9);
+        border: none;
+        color: white;
+        border-radius: 5px;
+        transition: background-color 0.3s, transform 0.3s ease;
+    }
+
+        .btn-continue:hover {
+            background-image: linear-gradient(45deg, #2980b9, #3498db);
+            transform: translateY(-3px);
+        }
+</style>
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet" />
+
+<h2 style="text-align:center; color:blue">GIỎ HÀNG CỦA BẠN</h2>
+<div class="cart-container">
+    <div class="cart-items">
+        <div class="section group">
+            @if (Model.Count > 0)
+            {
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th>Tên sản phẩm</th>
+                            <th>Số lượng</th>
+                            <th>Đơn giá</th>
+                            <th>Thành tiền</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td><img src="~/Assets/Image/@item.product.HinhAnh" class="product-image" /></td>
+                                <td style="padding:20px">@item.product.TenSP</td>
+                                <td style="padding:20px"><input type="number" class="txtQuantity" data-id="@item.product.MaSP" value="@item.Quantity" min="1" /></td>
+                                <td style="padding:20px">
+                                    @if (item.product.GiaKM.HasValue && item.product.GiaKM.Value > 0)
+                                    {
+                                        @String.Format("{0:N0}", item.product.GiaKM) }
+                                    else
+                                    {
+                                        @String.Format("{0:N0}", item.product.GiaBan)}
+                                </td>
+                                <td style="padding:20px">
+                                    @if (item.product.GiaKM.HasValue && item.product.GiaKM.Value > 0)
+                                    {
+                                        @String.Format("{0:N0}", item.product.GiaKM * item.Quantity) }
+                                    else
+                                    {
+                                        @String.Format("{0:N0}", item.product.GiaBan * item.Quantity)}
+                                </td>
+                                <td style="padding:20px">
+                                    <a href="#" data-id="@item.product.MaSP" class="btn-delete"><i class="fas fa-trash"></i></a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+
+                </table>
+                <div class="cart-buttons d-flex justify-content-between mt-4">
+                    <button id="btnContinue" class="btn btn-outline-primary">Tiếp tục mua hàng</button>
+                    <button id="btnUpdate" class="btn btn-outline-info">Cập nhật giỏ hàng</button>
+                    <button id="btnDeleteAll" class="btn btn-outline-danger">Xoá giỏ hàng</button>
+                </div>
+
+            }
+            else
+            {
+                <div class="container text-center mt-5">
+                    <div class="alert alert-danger alert-custom">
+                        <strong>Chưa có sản phẩm nào trong giỏ hàng</strong>
+                    </div>
+                    <div class="mt-4">
+                        <button id="btnContinue" class="btn btn-primary btn-continue">
+                            <i class="fas fa-shopping-cart"></i> Tiếp tục mua hàng
+                        </button>
+                    </div>
+                </div>
+
+            }
+        </div>
+    </div>
+    <div class="cart-summary card p-4 mt-4" style="height:350px">
+        <h3 class="card-title text-center">Thông tin Thanh Toán</h3>
+        <div class="card-body">
+            <div class="row mb-2 align-items-center">
+                <div class="col-8">
+                    <p class="card-text mb-0">Số sản phẩm:</p>
+                </div>
+                <div class="col-4 text-end">
+                    @*<strong>@Model.Count</strong>*@
+                    <strong>@Model.Sum(item => item.Quantity)</strong>
+                </div>
+            </div><hr />
+
+            <div class="row mb-2 align-items-center">
+                <div class="col-6">
+                    <p class="card-text mb-0">Tổng tiền:</p>
+                </div>
+                <div class="col-6 text-end">
+                    <strong>
+                        @String.Format("{0:N0}", @ViewBag.TotalAmount)
+                    </strong>
+                </div>
+            </div><hr />
+
+            <div class="row mb-2 align-items-center">
+                <div class="col-8">
+                    <p class="card-text mb-0">Phí vận chuyển:</p>
+                </div>
+                <div class="col-4 text-end">
+                    <strong>Miễn phí</strong>
+                </div><hr />
+            </div>
+
+            <button id="btnPayment" class="btn btn-primary w-100">
+                <i class="bi bi-cart-fill"></i> Thanh toán
+            </button>
+
+        </div>
+    </div>
+
+</div>
+
+
+
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+<script>
+
+    var cart = {
+        init: function () {
+            cart.regEvents();
+        },
+        regEvents: function () {
+            $('#btnContinue').off('click').on('click', function () {
+                window.location.href = "/";
+            });
+            $('#btnPayment').off('click').on('click', async function () {
+                var listProduct = $('.txtQuantity');
+                var isValid = true;  // Biến kiểm tra nếu tất cả số lượng hợp lệ
+
+                // Kiểm tra số lượng tồn kho cho mỗi sản phẩm
+                for (let item of listProduct) {
+                    var quantity = $(item).val();
+                    var productId = $(item).data('id');
+
+                    try {
+                        let response = await $.ajax({
+                            url: '/Cart/CheckStock',
+                            data: { productId: productId, quantity: quantity },
+                            type: 'POST',
+                            dataType: 'json'
+                        });
+
+                        if (!response.success) {
+                            alert(response.message); // Hiển thị thông báo nếu số lượng vượt quá tồn kho
+                            isValid = false;  // Đánh dấu là không hợp lệ
+                            break;  // Dừng kiểm tra nếu có lỗi
+                        }
+                    } catch (error) {
+                        console.error(error);
+                        alert(response.message);
+                        isValid = false;
+                        break;
+                    }
+                }
+
+                // Nếu tất cả số lượng hợp lệ, thực hiện thanh toán
+                if (isValid) {
+                    window.location.href = "/Pay/ThanhToanOff";
+                }
+            });
+            $('#btnUpdate').off('click').on('click', function () {
+                var listProduct = $('.txtQuantity');
+                var cartList = [];
+                $.each(listProduct, function (i, item) {
+                    cartList.push({
+                        Quantity: $(item).val(),
+                        Product: {
+                            MaSP: $(item).data('id')
+                        }
+                    });
+                });
+
+                $.ajax({
+                    url: '/Cart/Update',
+                    data: { cartModel: JSON.stringify(cartList) },
+                    dataType: 'json',
+                    type: 'POST',
+                    success: function (res) {
+                        if (res.status == true) {
+                            window.location.href = "/Cart";  // Chuyển hướng đến giỏ hàng sau khi cập nhật thành công
+                        } else {
+                            // Nếu không thành công, hiển thị thông báo lỗi từ JSON
+                            alert(res.message || 'Có lỗi xảy ra khi cập nhật giỏ hàng.');
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        // Nếu có lỗi trong Ajax, hiển thị thông báo lỗi
+                        console.log(xhr.responseText); // In ra lỗi chi tiết
+                        alert('Có lỗi xảy ra khi gửi yêu cầu.');
+                    }
+                })
+            });
+
+            $('#btnDeleteAll').off('click').on('click', function () {
+
+
+                $.ajax({
+                    url: '/Cart/DeleteAll',
+                    dataType: 'json',
+                    type: 'POST',
+                    success: function (res) {
+                        if (res.status == true) {
+                            window.location.href = "/Cart";
+                        }
+                    }
+                })
+            });
+
+            $('.btn-delete').off('click').on('click', function (e) {
+                e.preventDefault();
+                $.ajax({
+                    data: { id: $(this).data('id') },
+                    url: '/Cart/Delete',
+                    dataType: 'json',
+                    type: 'POST',
+                    success: function (res) {
+                        if (res.status == true) {
+                            window.location.href = "/Cart";
+                        }
+                    }
+                })
+            });
+        }
+    }
+    cart.init();
+</script>
+
+<script>
+    function updatePaymentButtonStatus() {
+        var listProduct = $('.txtQuantity'); // Lấy danh sách sản phẩm trong giỏ hàng
+
+        // Nếu giỏ hàng trống, vô hiệu hóa nút thanh toán
+        if (listProduct.length === 0) {
+            $('#btnPayment').attr('disabled', true);
+        } else {
+            $('#btnPayment').attr('disabled', false);
+        }
+    }
+
+    // Gọi hàm này khi trang được tải
+    $(document).ready(function () {
+        updatePaymentButtonStatus();
+
+        // Nếu có sự kiện thay đổi giỏ hàng, kiểm tra lại trạng thái
+        $('.txtQuantity').on('input change', function () {
+            updatePaymentButtonStatus();
+        });
+    });
+
+</script>

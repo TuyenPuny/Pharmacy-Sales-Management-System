@@ -1,0 +1,184 @@
+﻿@model DoAnTotNghiep_WebMinhChau.Areas.Admin.Models.ChiTietHoaDonViewModel
+
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hóa Đơn</title>
+
+    <!-- CSS -->
+    <style>
+        /* CSS chung cho tất cả các kích thước màn hình */
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .invoice {
+            width: 50%;
+            padding: 20px;
+            border-radius: 10px;
+            background-color: #f9f9f9;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .invoice-info,
+        .invoice-details {
+            border: 1px solid #ddd;
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 5px;
+        }
+
+        /* Căn giữa các phần tử */
+        .text-center {
+            text-align: center;
+        }
+
+        /* Đảm bảo các phần tử có thể tự động điều chỉnh trong các container */
+        .row {
+           /* display: flex;*/
+            flex-wrap: wrap;
+            justify-content: space-between;
+        }
+
+        .col-md-6 {
+            flex: 1;
+            min-width: 200px; /* Đảm bảo cột không bị thu nhỏ quá mức */
+            padding: 10px;
+        }
+
+        /* Căn giữa phần "NHÀ THUỐC MINH CHÂU" */
+        .title {
+            text-align: center;
+        }
+
+        .invoice-info {
+            display: flex;
+            flex-wrap: wrap; /* Các cột không bị tràn ra ngoài */
+            gap: 10px;
+        }
+
+            .invoice-info .col-md-6 {
+                flex: 0 0 48%; /* Mỗi cột chiếm 48% chiều rộng */
+                padding: 5px;
+            }
+
+        .invoice-details table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .invoice-details th,
+        .invoice-details td {
+            padding: 8px;
+            border: 1px solid #ddd;
+            text-align: center;
+        }
+
+        .total {
+            margin-top: 20px;
+            text-align: right;
+        }
+
+        .notice {
+            margin-top: 30px;
+            text-align: center;
+            font-style: italic;
+        }
+
+        table {
+            width: 100%;
+            table-layout: fixed; /* Cải thiện độ hiển thị của bảng */
+            overflow-wrap: break-word;
+        }
+
+        th, td {
+            word-wrap: break-word;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container" id="invoiceSection">
+        <div class="invoice border p-4 shadow-lg">
+            <!-- Thông Tin Hóa Đơn -->
+            <div>
+                <div class="row mb-2 justify-content-center text-center">
+                    <div class="col-12">
+                        <h2 class="text-center mb-4">NHÀ THUỐC MINH CHÂU</h2>
+                        @if (@Model.HoaDon.HinhThucNhanHanh == "Nhận Hàng Tại Quầy Thuốc")
+                        {
+                            <div class="mb-2"><strong>Địa Chỉ:</strong> @Model.HoaDon.DiaChiNhanHang</div>
+                        }
+                        else
+                        {
+                            <div class="mb-2"><strong>Địa Chỉ:</strong> @Model.HoaDon.DiaChiNhanHang - @Model.HoaDon.PhuongXa - @Model.HoaDon.QuanHuyen - @Model.HoaDon.TinhThanh</div>
+                        }
+                        <div class="mb-2"><strong>Hình Thức Nhận Hàng:</strong> @Model.HoaDon.HinhThucNhanHanh</div>
+                        <div class="mb-2"><strong>Số Điện Thoại:</strong> 0365550000</div>
+                    </div>
+                </div>
+            </div>
+
+            <h3 class="text-center mb-4">Hóa đơn bán hàng</h3>
+            <div class="invoice-info p-4 mb-4 shadow-sm border">
+                <div class="row mb-2">
+                    <div class="col-md-6"><strong>Mã Hóa Đơn:</strong> @Model.HoaDon.MaHD</div>
+                    <div class="col-md-6"><strong>Ngày Lập:</strong> @((DateTime)Model.HoaDon.thoiGian)</div>
+                    <div class="col-md-6"><strong>Họ Tên:</strong> @Model.HoaDon.HoTen</div>
+                    <div class="col-md-6"><strong>Số Điện Thoại:</strong> @Model.HoaDon.SDT</div>
+                    <div class="col-md-6"><strong>Phương Thức Thanh Toán:</strong> @Model.HoaDon.PTTT</div>
+                </div>
+            </div>
+
+            <!-- Bảng Chi Tiết -->
+            <div class="invoice-details p-4 border shadow-sm">
+                <table class="table table-bordered table-striped">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th>STT</th>
+                            <th>Tên Sản Phẩm</th>
+                            <th>Số Lượng</th>
+                            <th>Đơn Giá</th>
+                            <th>Thành Tiền</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @{
+                            int index = 1;
+                            foreach (var item in Model.ChiTietHoaDon)
+                            {
+                                <tr>
+                                    <td>@index</td>
+                                    <td>@item.TenSP</td>
+                                    <td>@item.SoLuong</td>
+                                    <td>@item.DonGia.ToString("#,0") VNĐ</td>
+                                    <td>@item.ThanhTien.ToString("#,0") VNĐ</td>
+                                </tr>
+                                index++;
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="total mt-4 text-end">
+                <h4><strong>Tổng Tiền:</strong> @(Model.HoaDon.TongTien.HasValue ? Model.HoaDon.TongTien.Value.ToString("#,0") : "0") VNĐ</h4>
+            </div>
+            <div class="notice text-center mt-auto">
+                <p>LƯU Ý: Quý khách vui lòng kiểm tra tiền và sản phẩm trước khi nhận hàng</p>
+                <p>Cảm ơn và hẹn gặp lại!</p>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
