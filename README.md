@@ -13,7 +13,7 @@ Trong dự án này, tôi đảm nhận vai trò Business Analyst & Developer, t
 
 1. Phân tích & Thiết kế
 
-Thiết kế Use Case nghiệp vụ: Tra cứu và cung cấp sản phẩm, giỏ hàng
+Thiết kế Use Case nghiệp vụ: Tra cứu và cung cấp sản phẩm, giỏ hàng...
 
   <img width="418" height="252" alt="image" src="https://github.com/user-attachments/assets/7bdc32d8-0d97-4e18-9cfd-dea43bbfa756" />
   
